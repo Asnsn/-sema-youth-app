@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { getSql } from "@/lib/db"
+
+export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
+    const sql = getSql()
+    if (!sql) {
+      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    }
+
     const units = await sql`
       SELECT 
         u.id, u.name, u.description, u.location, u.status, u.created_at,
@@ -20,6 +27,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const sql = getSql()
+    if (!sql) {
+      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    }
+
     const { name, description, location, manager_id } = await request.json()
 
     const result = await sql`

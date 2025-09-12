@@ -1,5 +1,17 @@
 import { neon } from "@neondatabase/serverless"
 
-const sql = neon(process.env.DATABASE_URL!)
+export function getDbConnection() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL environment variable is not set")
+  }
+  return neon(process.env.DATABASE_URL)
+}
 
-export { sql }
+export function getSql() {
+  try {
+    return getDbConnection()
+  } catch (error) {
+    console.error("Database connection error:", error)
+    return null
+  }
+}
