@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,92 +10,63 @@ interface PageProps {
 
 export default async function UnitDetailPage({ params }: PageProps) {
   const { unitId } = await params
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect("/auth/login")
+  const unit = {
+    id: unitId,
+    name: "SEMA Brasil",
+    location: "São Paulo",
+    country: "Brasil",
+    created_at: "2024-01-01",
   }
 
-  // Get admin profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const students = [
+    { id: "1", full_name: "João Silva", email: "joao@email.com", created_at: "2024-01-15" },
+    { id: "2", full_name: "Maria Santos", email: "maria@email.com", created_at: "2024-01-20" },
+  ]
 
-  if (!profile || profile.role !== "admin") {
-    redirect("/auth/login")
-  }
+  const teachers = [{ id: "1", full_name: "Prof. Carlos", email: "carlos@email.com" }]
 
-  // Get unit details with comprehensive data
-  const { data: unit } = await supabase
-    .from("units")
-    .select(`
-      *,
-      profiles!profiles_unit_id_fkey (
-        id,
-        full_name,
-        email,
-        role,
-        phone,
-        created_at
-      ),
-      activities (
-        id,
-        name,
-        description,
-        category,
-        is_active,
-        max_participants,
-        schedule_days,
-        schedule_time,
-        enrollments (id, status, enrolled_at),
-        attendance (status, date)
-      ),
-      events (
-        id,
-        title,
-        description,
-        event_date,
-        event_time,
-        is_public,
-        max_participants
-      )
-    `)
-    .eq("id", unitId)
-    .single()
+  const activeActivities = [
+    {
+      id: "1",
+      name: "Yoga Matinal",
+      description: "Aulas de yoga para iniciantes",
+      category: "wellness",
+      max_participants: 20,
+      schedule_days: ["Segunda", "Quarta"],
+      schedule_time: "07:00",
+      enrollments: [{ id: "1" }, { id: "2" }],
+    },
+  ]
 
-  if (!unit) {
-    redirect("/admin/units")
-  }
+  const upcomingEvents = [
+    {
+      id: "1",
+      title: "Workshop de Meditação",
+      event_date: "2024-12-20",
+      event_time: "14:00",
+      max_participants: 15,
+    },
+  ]
 
   // Process data
-  const students = unit.profiles?.filter((p) => p.role === "student") || []
-  const teachers = unit.profiles?.filter((p) => p.role === "teacher") || []
-  const activeActivities = unit.activities?.filter((a) => a.is_active) || []
-  const upcomingEvents =
-    unit.events?.filter((e) => e.event_date >= new Date().toISOString().split("T")[0]).slice(0, 5) || []
-
-  // Calculate statistics
-  const totalEnrollments = unit.activities?.reduce((sum, activity) => sum + (activity.enrollments?.length || 0), 0) || 0
-  const activeEnrollments =
-    unit.activities?.reduce(
-      (sum, activity) => sum + (activity.enrollments?.filter((e) => e.status === "active").length || 0),
-      0,
-    ) || 0
+  const totalEnrollments = activeActivities.reduce((sum, activity) => sum + (activity.enrollments?.length || 0), 0)
+  const activeEnrollments = activeActivities.reduce(
+    (sum, activity) => sum + (activity.enrollments?.filter((e) => e.status === "active").length || 0),
+    0,
+  )
 
   // Attendance statistics
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
-  const recentAttendance =
-    unit.activities?.reduce(
-      (sum, activity) => sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo).length || 0),
-      0,
-    ) || 0
-  const presentAttendance =
-    unit.activities?.reduce(
-      (sum, activity) =>
-        sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
-      0,
-    ) || 0
+  const recentAttendance = activeActivities.reduce(
+    (sum, activity) => sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo).length || 0),
+    0,
+  )
+  const presentAttendance = activeActivities.reduce(
+    (sum, activity) =>
+      sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
+    0,
+  )
   const attendanceRate = recentAttendance > 0 ? Math.round((presentAttendance / recentAttendance) * 100) : 0
 
   return (

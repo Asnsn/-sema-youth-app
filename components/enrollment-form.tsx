@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 
 interface EnrollmentFormProps {
@@ -21,15 +20,15 @@ export function EnrollmentForm({ activityId, studentId, isWaitingList }: Enrollm
     setError(null)
 
     try {
-      const supabase = createClient()
-
-      const { error } = await supabase.from("enrollments").insert({
+      const enrollmentData = {
         student_id: studentId,
         activity_id: activityId,
         status: isWaitingList ? "waiting" : "active",
-      })
+      }
 
-      if (error) throw error
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log("Enrollment created:", enrollmentData)
 
       router.push("/student")
     } catch (error: unknown) {

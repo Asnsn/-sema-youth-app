@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { Users, Calendar, BarChart3, Building2, LogOut, Home, Bell } from "lucide-react"
+import { BookOpen, Users, BarChart3, Calendar, LogOut, Home, Bell } from "lucide-react"
 import { useSidebar } from "@/contexts/sidebar-context"
 
-export default function DesktopSidebar() {
+export function TeacherSidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const { isCollapsed, setIsCollapsed } = useSidebar()
@@ -15,16 +15,21 @@ export default function DesktopSidebar() {
   }
 
   const menuItems = [
-    { href: "/admin", icon: Home, label: "Dashboard", active: pathname === "/admin" },
-    { href: "/admin/users", icon: Users, label: "Usuários", active: pathname.startsWith("/admin/users") },
+    { href: "/teacher", icon: Home, label: "Dashboard", active: pathname === "/teacher" },
     {
-      href: "/admin/activities",
-      icon: Calendar,
-      label: "Atividades",
-      active: pathname.startsWith("/admin/activities"),
+      href: "/teacher/activities",
+      icon: BookOpen,
+      label: "Minhas Atividades",
+      active: pathname.startsWith("/teacher/activities"),
     },
-    { href: "/admin/reports", icon: BarChart3, label: "Relatórios", active: pathname.startsWith("/admin/reports") },
-    { href: "/admin/units", icon: Building2, label: "Unidades", active: pathname.startsWith("/admin/units") },
+    { href: "/teacher/students", icon: Users, label: "Meus Alunos", active: pathname.startsWith("/teacher/students") },
+    {
+      href: "/teacher/attendance",
+      icon: Calendar,
+      label: "Chamadas",
+      active: pathname.startsWith("/teacher/attendance"),
+    },
+    { href: "/teacher/reports", icon: BarChart3, label: "Relatórios", active: pathname.startsWith("/teacher/reports") },
   ]
 
   return (
@@ -38,7 +43,7 @@ export default function DesktopSidebar() {
         {!isCollapsed && (
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-blue-600">SEMA</h1>
-            <span className="ml-2 text-sm text-gray-500">Admin</span>
+            <span className="ml-2 text-sm text-gray-500">Professor</span>
           </div>
         )}
         {isCollapsed && (
@@ -118,3 +123,5 @@ export default function DesktopSidebar() {
     </div>
   )
 }
+
+export default TeacherSidebar

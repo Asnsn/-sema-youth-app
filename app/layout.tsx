@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
+import { SidebarProvider } from "@/contexts/sidebar-context"
 
 export const metadata: Metadata = {
   title: "SEMA - Sistema de Gestão Educacional",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "SEMA",
   },
-    generator: 'v0.app'
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -32,7 +33,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.jpg" />
       </head>
       <body className="font-sans antialiased">
-        {children}
+        <SidebarProvider>{children}</SidebarProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `

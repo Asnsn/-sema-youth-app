@@ -1,315 +1,324 @@
 "use client"
 
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Users, Calendar, CheckCircle, Clock, BookOpen, UserCheck } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { Users, Calendar, CheckCircle, Clock, BookOpen, UserCheck, Bell, LogOut } from "lucide-react"
+import TeacherMobileNav from "@/components/teacher-mobile-nav"
+import TeacherSidebar from "@/components/teacher-sidebar"
+import { useSidebar } from "@/contexts/sidebar-context"
 
-export default async function TeacherDashboard() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+const mockProfile = {
+  full_name: "Professor Silva",
+  role: "teacher",
+  units: {
+    name: "Unidade Central",
+    location: "São Paulo",
+    country: "Brasil",
+  },
+}
 
-  if (!user) {
-    redirect("/auth/login")
+const mockActivities = [
+  {
+    id: 1,
+    name: "Yoga Matinal",
+    description: "Aula de yoga para iniciantes",
+    category: "fitness",
+    max_participants: 20,
+    schedule_days: ["monday", "wednesday", "friday"],
+    schedule_time: "07:00",
+    is_active: true,
+    enrollments: [
+      { id: 1, status: "active", profiles: { full_name: "Ana Silva", id: 1 } },
+      { id: 2, status: "active", profiles: { full_name: "João Santos", id: 2 } },
+    ],
+  },
+  {
+    id: 2,
+    name: "Pilates Avançado",
+    description: "Aula de pilates para praticantes experientes",
+    category: "fitness",
+    max_participants: 15,
+    schedule_days: ["tuesday", "thursday"],
+    schedule_time: "18:00",
+    is_active: true,
+    enrollments: [{ id: 3, status: "active", profiles: { full_name: "Maria Costa", id: 3 } }],
+  },
+]
+
+const mockRecentAttendance = [
+  {
+    id: 1,
+    status: "present",
+    date: new Date().toISOString().split("T")[0],
+    recorded_at: new Date().toISOString(),
+    profiles: { full_name: "Ana Silva" },
+    activities: { name: "Yoga Matinal" },
+  },
+  {
+    id: 2,
+    status: "absent",
+    date: new Date().toISOString().split("T")[0],
+    recorded_at: new Date().toISOString(),
+    profiles: { full_name: "João Santos" },
+    activities: { name: "Yoga Matinal" },
+  },
+]
+
+export default function TeacherDashboard() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const { isCollapsed } = useSidebar()
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [])
+
+  const handleLogout = () => {
+    router.push("/auth/login")
   }
 
-  // Get teacher profile
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(`
-      *,
-      units (name, location, country)
-    `)
-    .eq("id", user.id)
-    .single()
-
-  if (!profile || profile.role !== "teacher") {
-    redirect("/auth/login")
-  }
-
-  // Get teacher's activities
-  const { data: activities } = await supabase
-    .from("activities")
-    .select(`
-      *,
-      enrollments!inner (
-        id,
-        status,
-        profiles (full_name, id)
-      )
-    `)
-    .eq("teacher_id", user.id)
-    .eq("is_active", true)
+  const profile = mockProfile
+  const activities = mockActivities
+  const recentAttendance = mockRecentAttendance
 
   // Get today's activities for quick attendance
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase()
   const todaysActivities = activities?.filter((activity) => activity.schedule_days?.includes(today)) || []
 
-  // Get recent attendance records
-  const { data: recentAttendance } = await supabase
-    .from("attendance")
-    .select(`
-      *,
-      profiles (full_name),
-      activities (name)
-    `)
-    .eq("recorded_by", user.id)
-    .order("recorded_at", { ascending: false })
-    .limit(10)
-
   // Calculate statistics
   const totalStudents = activities?.reduce((sum, activity) => sum + (activity.enrollments?.length || 0), 0) || 0
   const totalActivities = activities?.length || 0
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-blue-600 text-lg">Carregando...</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-blue-900 dark:text-blue-100">
-              Professor {profile.full_name.split(" ")[0]}
-            </h1>
-            <p className="text-green-700 dark:text-green-300">
-              {profile.units?.name} - {profile.units?.location}, {profile.units?.country}
+    <div className="min-h-screen bg-gray-50">
+      <TeacherSidebar />
+
+      {/* Main Content */}
+      <div className={`lg:pl-64 transition-all duration-300 ${isCollapsed ? "lg:pl-16" : "lg:pl-64"}`}>
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between p-4">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Professor {profile.full_name.split(" ")[0]}</h1>
+              <p className="text-sm text-gray-500">
+                {profile.units?.name} - {profile.units?.location}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="p-2 rounded-lg bg-gray-100 text-gray-600">
+                <Bell size={20} />
+              </button>
+              <button onClick={handleLogout} className="p-2 rounded-lg bg-red-50 text-red-600">
+                <LogOut size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden lg:block bg-white border-b border-gray-200">
+          <div className="px-6 py-4">
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard Professor</h1>
+            <p className="text-gray-600">
+              Professor {profile.full_name} - {profile.units?.name}
             </p>
           </div>
-          <Button
-            onClick={async () => {
-              const supabase = createClient()
-              await supabase.auth.signOut()
-              window.location.href = "/"
-            }}
-            variant="outline"
-          >
-            Sair
-          </Button>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Atividades</p>
-                  <p className="text-2xl font-bold text-blue-600">{totalActivities}</p>
+        {/* Content */}
+        <div className="p-4 lg:p-6 pb-20 lg:pb-6">
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <BookOpen size={20} className="text-blue-600" />
                 </div>
-                <BookOpen className="h-8 w-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Alunos</p>
-                  <p className="text-2xl font-bold text-green-600">{totalStudents}</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900">{totalActivities}</p>
+                  <p className="text-sm text-gray-500">Atividades</p>
                 </div>
-                <Users className="h-8 w-8 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Atividades Hoje</p>
-                  <p className="text-2xl font-bold text-orange-600">{todaysActivities.length}</p>
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Users size={20} className="text-green-600" />
                 </div>
-                <Calendar className="h-8 w-8 text-orange-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Registros Hoje</p>
-                  <p className="text-2xl font-bold text-purple-600">
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900">{totalStudents}</p>
+                  <p className="text-sm text-gray-500">Alunos</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Calendar size={20} className="text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900">{todaysActivities.length}</p>
+                  <p className="text-sm text-gray-500">Hoje</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <UserCheck size={20} className="text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900">
                     {recentAttendance?.filter((r) => r.date === new Date().toISOString().split("T")[0]).length || 0}
                   </p>
+                  <p className="text-sm text-gray-500">Registros</p>
                 </div>
-                <UserCheck className="h-8 w-8 text-purple-600" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Today's Activities */}
-            <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-orange-600" />
-                  Atividades de Hoje
-                </CardTitle>
-                <CardDescription>Faça a chamada das suas atividades de hoje</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {todaysActivities.length > 0 ? (
-                  <div className="space-y-4">
-                    {todaysActivities.map((activity) => (
-                      <div
-                        key={activity.id}
-                        className="p-4 border rounded-lg bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-semibold text-lg">{activity.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {activity.enrollments?.length || 0} alunos inscritos
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <Clock className="h-4 w-4" />
-                            {activity.schedule_time}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button asChild size="sm" className="bg-green-600 hover:bg-green-700">
-                            <Link href={`/teacher/attendance/${activity.id}`}>Fazer Chamada</Link>
-                          </Button>
-                          <Button asChild variant="outline" size="sm">
-                            <Link href={`/teacher/activities/${activity.id}`}>Ver Detalhes</Link>
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                    Nenhuma atividade agendada para hoje.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* All Activities */}
-            <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-blue-600" />
-                  Todas as Minhas Atividades
-                </CardTitle>
-                <CardDescription>Gerencie suas atividades e alunos</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {activities && activities.length > 0 ? (
-                  <div className="space-y-4">
-                    {activities.map((activity) => (
-                      <div key={activity.id} className="p-4 border rounded-lg">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-semibold text-lg">{activity.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{activity.description}</p>
-                          </div>
-                          <Badge variant="outline" className="capitalize">
-                            {activity.category}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              {activity.enrollments?.length || 0}/{activity.max_participants} alunos
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              {activity.schedule_days?.join(", ")}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {activity.schedule_time}
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button asChild variant="outline" size="sm">
-                              <Link href={`/teacher/activities/${activity.id}`}>Gerenciar</Link>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                    Você ainda não tem atividades atribuídas.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/teacher/activities">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Ver Todas Atividades
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/teacher/students">
-                    <Users className="h-4 w-4 mr-2" />
-                    Gerenciar Alunos
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start bg-transparent" variant="outline">
-                  <Link href="/teacher/reports">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Relatórios
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Recent Attendance */}
-            <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  Registros Recentes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {recentAttendance && recentAttendance.length > 0 ? (
-                  <div className="space-y-3">
-                    {recentAttendance.slice(0, 5).map((record) => (
-                      <div key={record.id} className="flex justify-between items-center text-sm">
+            <div>
+              <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Atividades de Hoje</h2>
+              {todaysActivities.length > 0 ? (
+                <div className="space-y-4">
+                  {todaysActivities.map((activity) => (
+                    <div key={activity.id} className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+                      <div className="flex justify-between items-start mb-3">
                         <div>
-                          <p className="font-medium">{record.profiles?.full_name}</p>
-                          <p className="text-gray-500 dark:text-gray-400">{record.activities?.name}</p>
+                          <h3 className="font-semibold text-lg text-gray-900">{activity.name}</h3>
+                          <p className="text-sm text-gray-500">{activity.enrollments?.length || 0} alunos inscritos</p>
                         </div>
-                        <Badge variant={record.status === "present" ? "default" : "secondary"} className="text-xs">
-                          {record.status === "present" ? "Presente" : "Ausente"}
-                        </Badge>
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <Clock className="h-4 w-4" />
+                          {activity.schedule_time}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Nenhum registro ainda hoje.</p>
-                )}
-              </CardContent>
-            </Card>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/teacher/attendance/${activity.id}`}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Fazer Chamada
+                        </Link>
+                        <Link
+                          href={`/teacher/activities/${activity.id}`}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Ver Detalhes
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <p className="text-gray-500 text-center">Nenhuma atividade agendada para hoje.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Actions & Recent Attendance */}
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <div>
+                <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Ações Rápidas</h2>
+                <div className="space-y-3">
+                  <Link
+                    href="/teacher/activities"
+                    className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95 block"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <BookOpen size={20} className="text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Ver Todas Atividades</h3>
+                        <p className="text-xs lg:text-sm text-gray-500">Gerencie suas atividades</p>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/teacher/students"
+                    className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95 block"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Users size={20} className="text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Gerenciar Alunos</h3>
+                        <p className="text-xs lg:text-sm text-gray-500">Lista de alunos</p>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/teacher/reports"
+                    className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95 block"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <CheckCircle size={20} className="text-orange-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Relatórios</h3>
+                        <p className="text-xs lg:text-sm text-gray-500">Análises e estatísticas</p>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Recent Attendance */}
+              <div>
+                <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Registros Recentes</h2>
+                <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+                  {recentAttendance && recentAttendance.length > 0 ? (
+                    <div className="space-y-3">
+                      {recentAttendance.slice(0, 5).map((record) => (
+                        <div key={record.id} className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-gray-900 text-sm">{record.profiles?.full_name}</p>
+                            <p className="text-xs text-gray-500">{record.activities?.name}</p>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              record.status === "present" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {record.status === "present" ? "Presente" : "Ausente"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm text-center">Nenhum registro ainda hoje.</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <TeacherMobileNav />
       </div>
     </div>
   )

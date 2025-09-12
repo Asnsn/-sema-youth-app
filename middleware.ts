@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server"
 
 export function middleware(request: NextRequest) {
-  // Simplified middleware without Supabase SSR
   return
 }
 

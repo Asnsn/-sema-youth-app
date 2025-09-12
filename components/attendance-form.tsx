@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
@@ -67,11 +66,8 @@ export function AttendanceForm({ activityId, teacherId, students, date }: Attend
     setError(null)
 
     try {
-      const supabase = createClient()
-
-      // Prepare attendance records
       const attendanceRecords = Object.entries(attendance)
-        .filter(([_, data]) => data.status) // Only include students with status set
+        .filter(([_, data]) => data.status)
         .map(([studentId, data]) => ({
           student_id: studentId,
           activity_id: activityId,
@@ -87,12 +83,9 @@ export function AttendanceForm({ activityId, teacherId, students, date }: Attend
         return
       }
 
-      // Upsert attendance records
-      const { error } = await supabase.from("attendance").upsert(attendanceRecords, {
-        onConflict: "student_id,activity_id,date",
-      })
-
-      if (error) throw error
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log("Attendance saved:", attendanceRecords)
 
       setSuccess(true)
       setTimeout(() => {

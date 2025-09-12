@@ -1,8 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -58,102 +56,116 @@ export default function StudentDashboard() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
   const [recentAttendance, setRecentAttendance] = useState<AttendanceRecord[]>([])
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient()
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push("/auth/login")
-        return
+      // Mock data for student dashboard
+      const mockProfile: Profile = {
+        id: "student-1",
+        full_name: "João Silva",
+        role: "student",
+        unit_id: "unit-1",
+        units: {
+          name: "SEMA Brasil",
+          location: "São Paulo",
+          country: "Brasil",
+        },
       }
 
-      // Get student profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select(`
-          *,
-          units (name, location, country)
-        `)
-        .eq("id", user.id)
-        .single()
+      const mockEnrollments: Enrollment[] = [
+        {
+          id: "enrollment-1",
+          activities: {
+            id: "activity-1",
+            name: "Yoga Matinal",
+            description: "Aulas de yoga para relaxamento e bem-estar",
+            category: "wellness",
+            schedule_days: ["Segunda", "Quarta", "Sexta"],
+            schedule_time: "07:00 - 08:00",
+            max_participants: 20,
+          },
+        },
+        {
+          id: "enrollment-2",
+          activities: {
+            id: "activity-2",
+            name: "Futebol",
+            description: "Treinos e jogos de futebol",
+            category: "sports",
+            schedule_days: ["Terça", "Quinta"],
+            schedule_time: "18:00 - 19:30",
+            max_participants: 22,
+          },
+        },
+      ]
 
-      if (!profileData || profileData.role !== "student") {
-        router.push("/auth/login")
-        return
-      }
+      const mockAvailableActivities: Activity[] = [
+        {
+          id: "activity-3",
+          name: "Natação",
+          description: "Aulas de natação para todos os níveis",
+          category: "sports",
+          schedule_days: ["Segunda", "Quarta"],
+          schedule_time: "19:00 - 20:00",
+          max_participants: 15,
+        },
+        {
+          id: "activity-4",
+          name: "Dança",
+          description: "Aulas de dança contemporânea",
+          category: "arts",
+          schedule_days: ["Sábado"],
+          schedule_time: "14:00 - 16:00",
+          max_participants: 25,
+        },
+      ]
 
-      setProfile(profileData)
+      const mockEvents: Event[] = [
+        {
+          id: "event-1",
+          title: "Torneio de Futebol",
+          event_date: "2024-01-20",
+          location: "Campo Principal",
+        },
+        {
+          id: "event-2",
+          title: "Festival de Dança",
+          event_date: "2024-01-25",
+          location: "Auditório",
+        },
+      ]
 
-      // Get student's enrollments
-      const { data: enrollmentData } = await supabase
-        .from("enrollments")
-        .select(`
-          *,
-          activities (
-            id,
-            name,
-            description,
-            category,
-            schedule_days,
-            schedule_time,
-            max_participants
-          )
-        `)
-        .eq("student_id", user.id)
-        .eq("status", "active")
+      const mockAttendance: AttendanceRecord[] = [
+        {
+          id: "att-1",
+          status: "present",
+          activities: { name: "Yoga Matinal" },
+        },
+        {
+          id: "att-2",
+          status: "present",
+          activities: { name: "Futebol" },
+        },
+        {
+          id: "att-3",
+          status: "absent",
+          activities: { name: "Yoga Matinal" },
+        },
+      ]
 
-      setEnrollments(enrollmentData || [])
-
-      // Get available activities for enrollment
-      const { data: activitiesData } = await supabase
-        .from("activities")
-        .select("*")
-        .eq("unit_id", profileData.unit_id)
-        .eq("is_active", true)
-
-      const enrolledActivityIds = enrollmentData?.map((e) => e.activities?.id) || []
-      const availableForEnrollment = activitiesData?.filter((a) => !enrolledActivityIds.includes(a.id)) || []
-      setAvailableActivities(availableForEnrollment)
-
-      // Get upcoming events
-      const { data: eventsData } = await supabase
-        .from("events")
-        .select("*")
-        .eq("unit_id", profileData.unit_id)
-        .gte("event_date", new Date().toISOString().split("T")[0])
-        .order("event_date", { ascending: true })
-        .limit(5)
-
-      setUpcomingEvents(eventsData || [])
-
-      // Get recent attendance
-      const { data: attendanceData } = await supabase
-        .from("attendance")
-        .select(`
-          *,
-          activities (name)
-        `)
-        .eq("student_id", user.id)
-        .order("date", { ascending: false })
-        .limit(10)
-
-      setRecentAttendance(attendanceData || [])
+      setProfile(mockProfile)
+      setEnrollments(mockEnrollments)
+      setAvailableActivities(mockAvailableActivities)
+      setUpcomingEvents(mockEvents)
+      setRecentAttendance(mockAttendance)
       setLoading(false)
     }
 
     fetchData()
-  }, [router])
+  }, [])
 
   const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push("/")
+    window.location.href = "/"
   }
 
   if (loading) {

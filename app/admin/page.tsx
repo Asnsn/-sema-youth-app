@@ -6,10 +6,12 @@ import Link from "next/link"
 import { Users, Calendar, BarChart3, Building2, LogOut, Bell, TrendingUp, Activity } from "lucide-react"
 import MobileBottomNav from "@/components/mobile-bottom-nav"
 import DesktopSidebar from "@/components/desktop-sidebar"
+import { useSidebar } from "@/contexts/sidebar-context"
 
 export default function AdminDashboard() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
+  const { isCollapsed } = useSidebar()
 
   useEffect(() => {
     setIsLoading(false)
@@ -32,7 +34,7 @@ export default function AdminDashboard() {
       <DesktopSidebar />
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className={`transition-all duration-300 ${isCollapsed ? "lg:pl-16" : "lg:pl-64"}`}>
         {/* Mobile Header */}
         <div className="lg:hidden bg-white border-b border-gray-200">
           <div className="flex items-center justify-between p-4">

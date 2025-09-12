@@ -1,11 +1,8 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, Users, ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { EnrollmentForm } from "@/components/enrollment-form"
 
 interface PageProps {
   params: Promise<{ activityId: string }>
@@ -13,54 +10,29 @@ interface PageProps {
 
 export default async function EnrollPage({ params }: PageProps) {
   const { activityId } = await params
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect("/auth/login")
+  const mockActivity = {
+    id: activityId,
+    name: "Natação",
+    description: "Aulas de natação para todos os níveis",
+    category: "sports",
+    schedule_days: ["Segunda", "Quarta"],
+    schedule_time: "19:00 - 20:00",
+    max_participants: 15,
+    units: {
+      name: "SEMA Brasil",
+      location: "São Paulo",
+    },
+    profiles: {
+      full_name: "Prof. Maria Santos",
+    },
+    age_min: 16,
+    age_max: 65,
   }
 
-  // Get student profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
-
-  if (!profile || profile.role !== "student") {
-    redirect("/auth/login")
-  }
-
-  // Get activity details
-  const { data: activity } = await supabase
-    .from("activities")
-    .select(`
-      *,
-      units (name, location),
-      profiles!activities_teacher_id_fkey (full_name)
-    `)
-    .eq("id", activityId)
-    .single()
-
-  if (!activity) {
-    redirect("/student")
-  }
-
-  // Check if already enrolled
-  const { data: existingEnrollment } = await supabase
-    .from("enrollments")
-    .select("*")
-    .eq("student_id", user.id)
-    .eq("activity_id", activityId)
-    .single()
-
-  // Get current enrollment count
-  const { count: currentEnrollments } = await supabase
-    .from("enrollments")
-    .select("*", { count: "exact" })
-    .eq("activity_id", activityId)
-    .eq("status", "active")
-
-  const isFullyBooked = currentEnrollments >= activity.max_participants
-  const canEnroll = !existingEnrollment && !isFullyBooked
+  const currentEnrollments = 8
+  const isFullyBooked = currentEnrollments >= mockActivity.max_participants
+  const existingEnrollment = false
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950">
@@ -82,47 +54,45 @@ export default async function EnrollPage({ params }: PageProps) {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-xl">{activity.name}</CardTitle>
+                  <CardTitle className="text-xl">{mockActivity.name}</CardTitle>
                   <CardDescription>
-                    {activity.units?.name} - {activity.units?.location}
+                    {mockActivity.units?.name} - {mockActivity.units?.location}
                   </CardDescription>
                 </div>
                 <Badge variant="outline" className="capitalize">
-                  {activity.category}
+                  {mockActivity.category}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-gray-600 dark:text-gray-400">{activity.description}</p>
+              <p className="text-gray-600 dark:text-gray-400">{mockActivity.description}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">
-                    <strong>Dias:</strong> {activity.schedule_days?.join(", ")}
+                    <strong>Dias:</strong> {mockActivity.schedule_days?.join(", ")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-green-600" />
                   <span className="text-sm">
-                    <strong>Horário:</strong> {activity.schedule_time}
+                    <strong>Horário:</strong> {mockActivity.schedule_time}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-orange-600" />
                   <span className="text-sm">
-                    <strong>Vagas:</strong> {currentEnrollments}/{activity.max_participants}
+                    <strong>Vagas:</strong> {currentEnrollments}/{mockActivity.max_participants}
                   </span>
                 </div>
-                {activity.profiles && (
-                  <div className="text-sm">
-                    <strong>Professor:</strong> {activity.profiles.full_name}
-                  </div>
-                )}
+                <div className="text-sm">
+                  <strong>Professor:</strong> {mockActivity.profiles.full_name}
+                </div>
               </div>
 
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                <strong>Faixa etária:</strong> {activity.age_min} - {activity.age_max} anos
+                <strong>Faixa etária:</strong> {mockActivity.age_min} - {mockActivity.age_max} anos
               </div>
             </CardContent>
           </Card>
@@ -135,9 +105,6 @@ export default async function EnrollPage({ params }: PageProps) {
                   <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
                     Você já está inscrito nesta atividade
                   </h3>
-                  <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                    Status: <Badge variant="outline">{existingEnrollment.status}</Badge>
-                  </p>
                   <Button asChild>
                     <Link href="/student">Voltar ao Dashboard</Link>
                   </Button>
@@ -150,9 +117,11 @@ export default async function EnrollPage({ params }: PageProps) {
                 <div className="text-center">
                   <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">Atividade Lotada</h3>
                   <p className="text-red-700 dark:text-red-300 mb-4">
-                    Esta atividade atingiu o número máximo de participantes. Você pode entrar na lista de espera.
+                    Esta atividade atingiu o número máximo de participantes.
                   </p>
-                  <EnrollmentForm activityId={activityId} studentId={user.id} isWaitingList={true} />
+                  <Button asChild>
+                    <Link href="/student">Voltar ao Dashboard</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -162,7 +131,11 @@ export default async function EnrollPage({ params }: PageProps) {
                 <div className="text-center">
                   <h3 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">Confirmar Inscrição</h3>
                   <p className="text-green-700 dark:text-green-300 mb-4">Você deseja se inscrever nesta atividade?</p>
-                  <EnrollmentForm activityId={activityId} studentId={user.id} isWaitingList={false} />
+                  <div className="space-y-4">
+                    <Button className="bg-green-600 hover:bg-green-700" asChild>
+                      <Link href="/student">Confirmar Inscrição</Link>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
