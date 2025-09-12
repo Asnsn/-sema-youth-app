@@ -1,0 +1,159 @@
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { GraduationCap, Users, Settings } from "lucide-react"
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError(null)
+
+    console.log("[v0] Login attempt:", { email, password: password ? "***" : "empty" })
+
+    try {
+      // Admin credentials
+      if (email === "admin@sema.org.br" && password === "sema2024admin") {
+        console.log("[v0] Admin login successful, redirecting to /admin")
+        router.push("/admin")
+        return
+      }
+
+      // Professor credentials
+      if (email === "professor@sema.org.br" && password === "sema2024prof") {
+        console.log("[v0] Professor login successful, redirecting to /teacher")
+        router.push("/teacher")
+        return
+      }
+
+      // Student login (any other valid email/password combination)
+      if (
+        email &&
+        password &&
+        email.includes("@") &&
+        password.length >= 6 &&
+        email !== "admin@sema.org.br" &&
+        email !== "professor@sema.org.br"
+      ) {
+        console.log("[v0] Student login successful, redirecting to /student")
+        router.push("/student")
+        return
+      }
+
+      // Invalid credentials
+      console.log("[v0] Invalid credentials")
+      throw new Error("Email ou senha incorretos")
+    } catch (error: unknown) {
+      console.log("[v0] Login error:", error)
+      setError(error instanceof Error ? error.message : "Erro ao fazer login")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 bg-green-700 rounded-2xl flex items-center justify-center mb-4">
+            <GraduationCap className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-green-800">SEMA</h1>
+          <p className="text-green-600">Sistema de Gestão Educacional</p>
+        </div>
+
+        <Card className="border-0 shadow-xl">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Entrar</CardTitle>
+            <CardDescription className="text-center">Acesse sua conta para continuar</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-12"
+                />
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button type="submit" disabled={isLoading} className="w-full h-12 bg-green-700 hover:bg-green-800">
+                {isLoading ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center text-sm">
+              Não tem uma conta?{" "}
+              <Link href="/auth/sign-up" className="text-green-700 hover:text-green-800 font-medium">
+                Cadastre-se
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-green-200 bg-green-50">
+          <CardContent className="pt-6">
+            <h3 className="font-semibold text-green-800 mb-3">Contas de Demonstração:</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <Settings className="w-4 h-4 text-green-600" />
+                <span>
+                  <strong>Admin:</strong> admin@sema.org.br / sema2024admin
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-green-600" />
+                <span>
+                  <strong>Professor:</strong> professor@sema.org.br / sema2024prof
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-green-600" />
+                <span>
+                  <strong>Aluno:</strong> qualquer@email.com / 123456
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}

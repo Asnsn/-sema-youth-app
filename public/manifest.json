@@ -1,0 +1,26 @@
+{
+  "name": "SEMA - Sistema de Gestão Educacional",
+  "short_name": "SEMA",
+  "description": "Plataforma para gestão de atividades educativas, culturais e esportivas do SEMA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1565c0",
+  "theme_color": "#1565c0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "pt-BR"
+}
