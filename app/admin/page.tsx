@@ -63,7 +63,7 @@ export default function AdminDashboard() {
         <div className="p-4 lg:p-6 pb-20 lg:pb-6">
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <Users size={20} className="text-blue-600" />
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center">
                   <Users size={20} className="text-green-600" />
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Calendar size={20} className="text-orange-600" />
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                   <BarChart3 size={20} className="text-purple-600" />
@@ -116,56 +116,64 @@ export default function AdminDashboard() {
             {/* Quick Actions */}
             <div>
               <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Ações Rápidas</h2>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
                 <Link
                   href="/admin/users"
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95"
                 >
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <Users size={24} className="text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">Gerenciar Usuários</h3>
-                    <p className="text-sm text-gray-500">Administrar alunos e professores</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Users size={20} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Gerenciar Usuários</h3>
+                      <p className="text-xs lg:text-sm text-gray-500">Administrar alunos e professores</p>
+                    </div>
                   </div>
                 </Link>
 
                 <Link
                   href="/admin/activities"
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95"
                 >
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Calendar size={24} className="text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">Gerenciar Atividades</h3>
-                    <p className="text-sm text-gray-500">Modalidades e programas</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Calendar size={20} className="text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Gerenciar Atividades</h3>
+                      <p className="text-xs lg:text-sm text-gray-500">Modalidades e programas</p>
+                    </div>
                   </div>
                 </Link>
 
                 <Link
                   href="/admin/reports"
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95"
                 >
-                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <BarChart3 size={24} className="text-orange-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">Relatórios</h3>
-                    <p className="text-sm text-gray-500">Análises e estatísticas</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 size={20} className="text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Relatórios</h3>
+                      <p className="text-xs lg:text-sm text-gray-500">Análises e estatísticas</p>
+                    </div>
                   </div>
                 </Link>
 
                 <Link
                   href="/admin/units"
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 active:scale-95"
                 >
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <Building2 size={24} className="text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">Gerenciar Unidades</h3>
-                    <p className="text-sm text-gray-500">SEMA Brasil e Angola</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Building2 size={20} className="text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Gerenciar Unidades</h3>
+                      <p className="text-xs lg:text-sm text-gray-500">SEMA Brasil e Angola</p>
+                    </div>
                   </div>
                 </Link>
               </div>

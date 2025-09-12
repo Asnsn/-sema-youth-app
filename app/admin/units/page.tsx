@@ -2,6 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { Building2, Users, Calendar, TrendingUp, ArrowLeft, Plus, Edit, Eye } from "lucide-react"
+import MobileBottomNav from "@/components/mobile-bottom-nav"
+import DesktopSidebar from "@/components/desktop-sidebar"
 
 export default function AdminUnits() {
   const [units, setUnits] = useState([
@@ -95,145 +98,128 @@ export default function AdminUnits() {
   }
 
   return (
-    <div
-      style={{ minHeight: "100vh", background: "linear-gradient(135deg, #e3f2fd 0%, #e8f5e8 100%)", padding: "2rem" }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "2rem",
-            padding: "1.5rem",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div>
-            <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#1565c0", margin: "0 0 0.5rem 0" }}>
-              Gerenciar Unidades
-            </h1>
-            <p style={{ color: "#2e7d32", margin: 0 }}>Administre todas as unidades SEMA</p>
-          </div>
-          <Link
-            href="/admin"
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#1565c0",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "4px",
-              fontWeight: "500",
-            }}
-          >
-            Voltar ao Dashboard
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <DesktopSidebar />
 
-        {/* Actions */}
-        <div style={{ marginBottom: "2rem", display: "flex", gap: "1rem" }}>
-          <button
-            onClick={handleNewUnit}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#2e7d32",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "500",
-            }}
-          >
-            + Nova Unidade
-          </button>
-        </div>
-
-        {/* Units Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "1.5rem" }}>
-          {units.map((unit) => (
-            <div
-              key={unit.id}
-              style={{
-                backgroundColor: "white",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              }}
-            >
-              <div style={{ marginBottom: "1rem" }}>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#1a1a1a", margin: "0 0 0.5rem 0" }}>
-                  🏢 {unit.name}
-                </h3>
-                <p style={{ color: "#666", margin: 0 }}>
-                  📍 {unit.location}, {unit.country}
-                </p>
-              </div>
-
-              {/* Statistics */}
-              <div
-                style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}
-              >
-                <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#f0f9ff", borderRadius: "4px" }}>
-                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1565c0", margin: 0 }}>{unit.students}</p>
-                  <p style={{ fontSize: "0.9rem", color: "#666", margin: 0 }}>Alunos</p>
-                </div>
-                <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#f0fdf4", borderRadius: "4px" }}>
-                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#2e7d32", margin: 0 }}>{unit.teachers}</p>
-                  <p style={{ fontSize: "0.9rem", color: "#666", margin: 0 }}>Professores</p>
-                </div>
-                <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#fff7ed", borderRadius: "4px" }}>
-                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#ea580c", margin: 0 }}>
-                    {unit.activities}
-                  </p>
-                  <p style={{ fontSize: "0.9rem", color: "#666", margin: 0 }}>Atividades</p>
-                </div>
-                <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#faf5ff", borderRadius: "4px" }}>
-                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#7c3aed", margin: 0 }}>
-                    {unit.attendance}%
-                  </p>
-                  <p style={{ fontSize: "0.9rem", color: "#666", margin: 0 }}>Presença</p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  onClick={() => handleViewDetails(unit.id)}
-                  style={{
-                    flex: 1,
-                    padding: "0.75rem",
-                    backgroundColor: "#1565c0",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Ver Detalhes
-                </button>
-                <button
-                  onClick={() => handleEditUnit(unit.id)}
-                  style={{
-                    flex: 1,
-                    padding: "0.75rem",
-                    backgroundColor: "#ea580c",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Editar
-                </button>
+      {/* Main Content */}
+      <div className="lg:pl-64">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <Link href="/admin" className="p-2 rounded-lg bg-gray-100 text-gray-600">
+                <ArrowLeft size={20} />
+              </Link>
+              <div>
+                <h1 className="text-lg font-bold text-gray-900">Unidades</h1>
+                <p className="text-sm text-gray-500">SEMA Brasil e Angola</p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
+
+        {/* Desktop Header */}
+        <div className="hidden lg:block bg-white border-b border-gray-200">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Gerenciar Unidades</h1>
+                <p className="text-gray-600">Administre todas as unidades SEMA</p>
+              </div>
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <ArrowLeft size={16} />
+                Voltar ao Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 lg:p-6 pb-20 lg:pb-6">
+          <div className="mb-6">
+            <button
+              onClick={handleNewUnit}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              <Plus size={16} />
+              Nova Unidade
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            {units.map((unit) => (
+              <div key={unit.id} className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <Building2 size={24} className="text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">{unit.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      {unit.location}, {unit.country}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-blue-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Users size={16} className="text-blue-600" />
+                    </div>
+                    <p className="text-xl lg:text-2xl font-bold text-blue-900">{unit.students}</p>
+                    <p className="text-xs text-blue-700">Alunos</p>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Users size={16} className="text-green-600" />
+                    </div>
+                    <p className="text-xl lg:text-2xl font-bold text-green-900">{unit.teachers}</p>
+                    <p className="text-xs text-green-700">Professores</p>
+                  </div>
+                  <div className="bg-orange-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Calendar size={16} className="text-orange-600" />
+                    </div>
+                    <p className="text-xl lg:text-2xl font-bold text-orange-900">{unit.activities}</p>
+                    <p className="text-xs text-orange-700">Atividades</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <TrendingUp size={16} className="text-purple-600" />
+                    </div>
+                    <p className="text-xl lg:text-2xl font-bold text-purple-900">{unit.attendance}%</p>
+                    <p className="text-xs text-purple-700">Presença</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleViewDetails(unit.id)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    <Eye size={14} />
+                    Ver Detalhes
+                  </button>
+                  <button
+                    onClick={() => handleEditUnit(unit.id)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
+                  >
+                    <Edit size={14} />
+                    Editar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <MobileBottomNav />
       </div>
     </div>
   )

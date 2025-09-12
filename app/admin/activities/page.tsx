@@ -2,6 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { Calendar, Users, ArrowLeft, Plus, FileText, Edit, Eye } from "lucide-react"
+import MobileBottomNav from "@/components/mobile-bottom-nav"
+import DesktopSidebar from "@/components/desktop-sidebar"
 
 export default function AdminActivities() {
   const [activities, setActivities] = useState([
@@ -114,156 +117,125 @@ export default function AdminActivities() {
   }
 
   return (
-    <div
-      style={{ minHeight: "100vh", background: "linear-gradient(135deg, #e3f2fd 0%, #e8f5e8 100%)", padding: "2rem" }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "2rem",
-            padding: "1.5rem",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div>
-            <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#1565c0", margin: "0 0 0.5rem 0" }}>
-              Gerenciar Atividades
-            </h1>
-            <p style={{ color: "#2e7d32", margin: 0 }}>Modalidades e programas oferecidos</p>
-          </div>
-          <Link
-            href="/admin"
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#1565c0",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "4px",
-              fontWeight: "500",
-            }}
-          >
-            Voltar ao Dashboard
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <DesktopSidebar />
 
-        {/* Actions */}
-        <div style={{ marginBottom: "2rem", display: "flex", gap: "1rem" }}>
-          <button
-            onClick={handleNewActivity}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#2e7d32",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "500",
-            }}
-          >
-            + Nova Atividade
-          </button>
-          <button
-            onClick={handleParticipationReport}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#ea580c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "500",
-            }}
-          >
-            Relatório de Participação
-          </button>
-        </div>
-
-        {/* Activities Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem" }}>
-          {activities.map((activity) => (
-            <div
-              key={activity.id}
-              style={{
-                backgroundColor: "white",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              }}
-            >
-              <div
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}
-              >
-                <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#1a1a1a", margin: 0 }}>{activity.name}</h3>
-                <span
-                  style={{
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "12px",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    backgroundColor: activity.status === "Ativo" ? "#dcfce7" : "#fef3c7",
-                    color: activity.status === "Ativo" ? "#166534" : "#92400e",
-                  }}
-                >
-                  {activity.status}
-                </span>
-              </div>
-
-              <div style={{ marginBottom: "1rem" }}>
-                <p style={{ margin: "0.25rem 0", color: "#666", fontSize: "0.9rem" }}>
-                  <strong>Categoria:</strong> {activity.category}
-                </p>
-                <p style={{ margin: "0.25rem 0", color: "#666", fontSize: "0.9rem" }}>
-                  <strong>Instrutor:</strong> {activity.instructor}
-                </p>
-                <p style={{ margin: "0.25rem 0", color: "#666", fontSize: "0.9rem" }}>
-                  <strong>Participantes:</strong> {activity.participants}
-                </p>
-                <p style={{ margin: "0.25rem 0", color: "#666", fontSize: "0.9rem" }}>
-                  <strong>Unidade:</strong> {activity.unit}
-                </p>
-              </div>
-
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  onClick={() => handleEditActivity(activity.id)}
-                  style={{
-                    flex: 1,
-                    padding: "0.75rem",
-                    backgroundColor: "#1565c0",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleViewDetails(activity.id)}
-                  style={{
-                    flex: 1,
-                    padding: "0.75rem",
-                    backgroundColor: "#ea580c",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Ver Detalhes
-                </button>
+      {/* Main Content */}
+      <div className="lg:pl-64">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <Link href="/admin" className="p-2 rounded-lg bg-gray-100 text-gray-600">
+                <ArrowLeft size={20} />
+              </Link>
+              <div>
+                <h1 className="text-lg font-bold text-gray-900">Atividades</h1>
+                <p className="text-sm text-gray-500">Modalidades e programas</p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
+
+        {/* Desktop Header */}
+        <div className="hidden lg:block bg-white border-b border-gray-200">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Gerenciar Atividades</h1>
+                <p className="text-gray-600">Modalidades e programas oferecidos</p>
+              </div>
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <ArrowLeft size={16} />
+                Voltar ao Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 lg:p-6 pb-20 lg:pb-6">
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <button
+              onClick={handleNewActivity}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              <Plus size={16} />
+              Nova Atividade
+            </button>
+            <button
+              onClick={handleParticipationReport}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+            >
+              <FileText size={16} />
+              Relatório de Participação
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+            {activities.map((activity) => (
+              <div key={activity.id} className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Calendar size={20} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm lg:text-base">{activity.name}</h3>
+                      <p className="text-xs lg:text-sm text-gray-500">{activity.category}</p>
+                    </div>
+                  </div>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      activity.status === "Ativo" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {activity.status}
+                  </span>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Users size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-600">{activity.instructor}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-600">{activity.participants} participantes</span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <strong>Unidade:</strong> {activity.unit}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditActivity(activity.id)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    <Edit size={14} />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleViewDetails(activity.id)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
+                  >
+                    <Eye size={14} />
+                    Detalhes
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <MobileBottomNav />
       </div>
     </div>
   )

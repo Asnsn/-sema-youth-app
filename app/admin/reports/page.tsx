@@ -2,6 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { BarChart3, Users, Calendar, ArrowLeft, Download } from "lucide-react"
+import MobileBottomNav from "@/components/mobile-bottom-nav"
+import DesktopSidebar from "@/components/desktop-sidebar"
 
 export default function AdminReports() {
   const [reportType, setReportType] = useState("")
@@ -11,160 +14,159 @@ export default function AdminReports() {
   }
 
   return (
-    <div
-      style={{ minHeight: "100vh", background: "linear-gradient(135deg, #e3f2fd 0%, #e8f5e8 100%)", padding: "2rem" }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "2rem",
-            padding: "1.5rem",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div>
-            <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#1565c0", margin: "0 0 0.5rem 0" }}>
-              Relatórios Administrativos
-            </h1>
-            <p style={{ color: "#2e7d32", margin: 0 }}>Análises detalhadas do sistema SEMA</p>
+    <div className="min-h-screen bg-gray-50">
+      <DesktopSidebar />
+
+      {/* Main Content */}
+      <div className="lg:pl-64">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <Link href="/admin" className="p-2 rounded-lg bg-gray-100 text-gray-600">
+                <ArrowLeft size={20} />
+              </Link>
+              <div>
+                <h1 className="text-lg font-bold text-gray-900">Relatórios</h1>
+                <p className="text-sm text-gray-500">Análises e estatísticas</p>
+              </div>
+            </div>
           </div>
-          <Link
-            href="/admin"
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#1565c0",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "4px",
-              fontWeight: "500",
-            }}
-          >
-            Voltar ao Dashboard
-          </Link>
         </div>
 
-        {/* Report Categories */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem" }}>
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#1a1a1a", marginBottom: "1rem" }}>
-              📊 Relatório de Frequência
-            </h3>
-            <p style={{ color: "#666", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              Análise detalhada de presença por atividade e período
-            </p>
-            <ul style={{ marginBottom: "1.5rem", paddingLeft: "1rem" }}>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>
-                Taxa de presença por atividade
-              </li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Comparativo entre unidades</li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Tendências mensais</li>
-            </ul>
-            <button
-              onClick={() => generateReport("Frequência")}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                backgroundColor: "#1565c0",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "500",
-              }}
-            >
-              📥 Gerar Relatório
-            </button>
-          </div>
-
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#1a1a1a", marginBottom: "1rem" }}>
-              👥 Relatório de Alunos
-            </h3>
-            <p style={{ color: "#666", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              Estatísticas de inscrições e participação
-            </p>
-            <ul style={{ marginBottom: "1.5rem", paddingLeft: "1rem" }}>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>
-                Total de alunos por unidade
-              </li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Inscrições por modalidade</li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>
-                Faixa etária e distribuição
-              </li>
-            </ul>
-            <button
-              onClick={() => generateReport("Alunos")}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                backgroundColor: "#2e7d32",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "500",
-              }}
-            >
-              📥 Gerar Relatório
-            </button>
-          </div>
-
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <h3 style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#1a1a1a", marginBottom: "1rem" }}>
-              🏃 Relatório de Atividades
-            </h3>
-            <p style={{ color: "#666", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              Performance e ocupação das modalidades
-            </p>
-            <ul style={{ marginBottom: "1.5rem", paddingLeft: "1rem" }}>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Taxa de ocupação</li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Atividades mais populares</li>
-              <li style={{ color: "#666", fontSize: "0.9rem", marginBottom: "0.25rem" }}>Performance por professor</li>
-            </ul>
-            <button
-              onClick={() => generateReport("Atividades")}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                backgroundColor: "#ea580c",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "500",
-              }}
-            >
-              📥 Gerar Relatório
-            </button>
+        {/* Desktop Header */}
+        <div className="hidden lg:block bg-white border-b border-gray-200">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Relatórios Administrativos</h1>
+                <p className="text-gray-600">Análises detalhadas do sistema SEMA</p>
+              </div>
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <ArrowLeft size={16} />
+                Voltar ao Dashboard
+              </Link>
+            </div>
           </div>
         </div>
+
+        {/* Content */}
+        <div className="p-4 lg:p-6 pb-20 lg:pb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <BarChart3 size={24} className="text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Relatório de Frequência</h3>
+                  <p className="text-sm text-gray-500">Análise de presença</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                  Taxa de presença por atividade
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                  Comparativo entre unidades
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                  Tendências mensais
+                </div>
+              </div>
+
+              <button
+                onClick={() => generateReport("Frequência")}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                <Download size={16} />
+                Gerar Relatório
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <Users size={24} className="text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Relatório de Alunos</h3>
+                  <p className="text-sm text-gray-500">Estatísticas de inscrições</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                  Total de alunos por unidade
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                  Inscrições por modalidade
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                  Faixa etária e distribuição
+                </div>
+              </div>
+
+              <button
+                onClick={() => generateReport("Alunos")}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                <Download size={16} />
+                Gerar Relatório
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <Calendar size={24} className="text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Relatório de Atividades</h3>
+                  <p className="text-sm text-gray-500">Performance e ocupação</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-orange-600 rounded-full"></div>
+                  Taxa de ocupação
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-orange-600 rounded-full"></div>
+                  Atividades mais populares
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-orange-600 rounded-full"></div>
+                  Performance por professor
+                </div>
+              </div>
+
+              <button
+                onClick={() => generateReport("Atividades")}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+              >
+                <Download size={16} />
+                Gerar Relatório
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <MobileBottomNav />
       </div>
     </div>
   )
