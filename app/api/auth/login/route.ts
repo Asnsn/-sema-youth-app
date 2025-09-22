@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase"
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = "force-dynamic"
 
@@ -10,8 +11,22 @@ export async function POST(request: Request) {
     console.log('=== SUPABASE LOGIN API CALLED ===')
     console.log('Login attempt for email:', email)
     
-    // Criar cliente Supabase
-    const supabase = createServerClient()
+    // Criar cliente Supabase com service role para contornar RLS
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase environment variables')
+      return NextResponse.json({ error: 'Configuração do servidor inválida' }, { status: 500 })
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+    console.log('Supabase service client created')
     
     // Fazer login no Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
