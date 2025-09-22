@@ -8,7 +8,7 @@ export async function GET() {
   try {
     // Simular autenticação - em produção, usar headers de auth
     const userId = '550e8400-e29b-41d4-a716-446655440001' // Admin por padrão
-    const userRole = getUserRole(userId)
+    const userRole = await getUserRole(userId)
 
     const sql = getDbConnection()
     const activities = await sql`

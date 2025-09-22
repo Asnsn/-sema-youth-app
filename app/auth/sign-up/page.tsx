@@ -44,9 +44,37 @@ export default function SignUpPage() {
       return
     }
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          role: 'student', // Por padrão, novos usuários são estudantes
+          unit_id: formData.unitId,
+          phone: formData.phone,
+          date_of_birth: formData.dateOfBirth,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar conta')
+      }
+
+      // Sucesso - redirecionar para página de sucesso
       router.push("/auth/sign-up-success")
-    }, 1000)
+    } catch (error: unknown) {
+      console.error('Signup error:', error)
+      setError(error instanceof Error ? error.message : "Erro ao criar conta")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {

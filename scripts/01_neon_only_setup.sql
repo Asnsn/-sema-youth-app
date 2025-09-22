@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   address TEXT,
   emergency_contact TEXT,
   emergency_phone TEXT,
+  password_hash TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -114,12 +115,12 @@ CREATE TABLE IF NOT EXISTS event_registrations (
 -- ==============================================
 
 -- Insert sample users
-INSERT INTO profiles (id, full_name, email, role, unit_id, phone, date_of_birth) VALUES
-  ('550e8400-e29b-41d4-a716-446655440001', 'Admin SEMA', 'admin@sema.org.br', 'admin', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0001', '1980-01-01'),
-  ('550e8400-e29b-41d4-a716-446655440002', 'Professor Silva', 'professor@sema.org.br', 'teacher', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0002', '1985-05-15'),
-  ('550e8400-e29b-41d4-a716-446655440003', 'João Silva', 'joao@email.com', 'student', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0003', '2005-03-20'),
-  ('550e8400-e29b-41d4-a716-446655440004', 'Maria Santos', 'maria@email.com', 'student', (SELECT id FROM units WHERE name = 'São Clemente'), '(11) 99999-0004', '2006-07-10'),
-  ('550e8400-e29b-41d4-a716-446655440005', 'Pedro Costa', 'pedro@email.com', 'student', (SELECT id FROM units WHERE name = 'Nova Hortolândia'), '(11) 99999-0005', '2004-12-05')
+INSERT INTO profiles (id, full_name, email, role, unit_id, phone, date_of_birth, password_hash) VALUES
+  ('550e8400-e29b-41d4-a716-446655440001', 'Admin SEMA', 'admin@sema.org.br', 'admin', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0001', '1980-01-01', 'sema2024admin'),
+  ('550e8400-e29b-41d4-a716-446655440002', 'Professor Silva', 'professor@sema.org.br', 'teacher', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0002', '1985-05-15', 'sema2024prof'),
+  ('550e8400-e29b-41d4-a716-446655440003', 'João Silva', 'joao@email.com', 'student', (SELECT id FROM units WHERE name = 'Carmem Cristina'), '(11) 99999-0003', '2005-03-20', 'sema2024aluno'),
+  ('550e8400-e29b-41d4-a716-446655440004', 'Maria Santos', 'maria@email.com', 'student', (SELECT id FROM units WHERE name = 'São Clemente'), '(11) 99999-0004', '2006-07-10', 'sema2024aluno'),
+  ('550e8400-e29b-41d4-a716-446655440005', 'Pedro Costa', 'pedro@email.com', 'student', (SELECT id FROM units WHERE name = 'Nova Hortolândia'), '(11) 99999-0005', '2004-12-05', 'sema2024aluno')
 ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample activities
