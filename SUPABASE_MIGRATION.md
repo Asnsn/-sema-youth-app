@@ -50,11 +50,32 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 2. Configure seu provedor de email (Gmail, SendGrid, etc.)
 3. Ou use o email de teste do Supabase para desenvolvimento
 
-### **6. Testar a Migração**
+### **6. Configurar Confirmação de Email (IMPORTANTE)**
+
+#### **Para Desenvolvimento/Teste:**
+```sql
+-- Execute no Supabase SQL Editor para desabilitar confirmação de email:
+scripts/07_disable_email_confirmation.sql
+```
+
+#### **Para Produção:**
+```sql
+-- Execute no Supabase SQL Editor para habilitar confirmação de email:
+scripts/08_enable_email_confirmation.sql
+```
+
+### **7. Testar a Migração**
 1. Execute `npm run build` para verificar se não há erros
 2. Execute `npm run dev` para testar localmente
 3. Teste o cadastro de usuários
 4. Teste o login
+
+### **8. Solução de Problemas**
+
+#### **Problema: "Credenciais inválidas" após cadastro**
+- **Causa:** Usuário precisa confirmar email antes de fazer login
+- **Solução:** Execute o script `07_disable_email_confirmation.sql` para desenvolvimento
+- **Para produção:** Configure SMTP e mantenha confirmação de email habilitada
 
 ### **7. Deploy para Vercel**
 1. Configure as variáveis de ambiente no Vercel:

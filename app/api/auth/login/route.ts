@@ -21,7 +21,23 @@ export async function POST(request: Request) {
     
     if (authError) {
       console.error('Supabase Auth error:', authError)
-      return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 })
+      
+      // Verificar se é erro de email não confirmado
+      if (authError.message.includes('Email not confirmed') || authError.message.includes('email_not_confirmed')) {
+        return NextResponse.json({ 
+          error: 'Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação.' 
+        }, { status: 401 })
+      }
+      
+      // Verificar se é erro de credenciais inválidas
+      if (authError.message.includes('Invalid login credentials') || authError.message.includes('invalid_credentials')) {
+        return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 })
+      }
+      
+      return NextResponse.json({ 
+        error: 'Erro ao fazer login', 
+        details: authError.message 
+      }, { status: 401 })
     }
     
     if (!authData.user) {
