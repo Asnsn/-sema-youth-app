@@ -52,7 +52,7 @@ export default async function UnitDetailPage({ params }: PageProps) {
   // Process data
   const totalEnrollments = activeActivities.reduce((sum, activity) => sum + (activity.enrollments?.length || 0), 0)
   const activeEnrollments = activeActivities.reduce(
-    (sum, activity) => sum + (activity.enrollments?.filter((e) => e.status === "active").length || 0),
+    (sum, activity) => sum + (activity.enrollments?.filter((e: any) => e.status === "active").length || 0),
     0,
   )
 

@@ -1,59 +1,28 @@
 import { NextResponse } from "next/server"
-import { getSupabaseDb } from "@/lib/db"
-import { getCurrentUser } from "@/lib/supabase"
+import { getDbConnection } from "@/lib/db"
+import { getUserRole } from "@/lib/auth-simple"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    const supabase = getSupabaseDb()
-    
-    const { data: activities, error } = await supabase
-      .from('activities')
-      .select(`
-        id,
-        name,
-        description,
-        category,
-        unit_id,
-        max_participants,
-        age_min,
-        age_max,
-        schedule_days,
-        schedule_time,
-        teacher_id,
-        is_active,
-        created_at,
-        updated_at,
-        units (
-          id,
-          name,
-          location,
-          country
-        ),
-        profiles!activities_teacher_id_fkey (
-          id,
-          full_name,
-          email
-        ),
-        enrollments (
-          id,
-          student_id,
-          status,
-          enrolled_at,
-          profiles!enrollments_student_id_fkey (
-            id,
-            full_name,
-            email
-          )
-        )
-      `)
-      .order('created_at', { ascending: false })
+    // Simular autenticação - em produção, usar headers de auth
+    const userId = '550e8400-e29b-41d4-a716-446655440001' // Admin por padrão
+    const userRole = getUserRole(userId)
 
-    if (error) {
-      console.error("Error fetching activities:", error)
-      return NextResponse.json({ error: "Failed to fetch activities" }, { status: 500 })
-    }
+    const sql = getDbConnection()
+    const activities = await sql`
+      SELECT 
+        a.*,
+        u.name as unit_name,
+        u.location as unit_location,
+        p.full_name as teacher_name,
+        p.email as teacher_email
+      FROM activities a
+      LEFT JOIN units u ON a.unit_id = u.id
+      LEFT JOIN profiles p ON a.teacher_id = p.id
+      ORDER BY a.created_at DESC
+    `
 
     return NextResponse.json(activities)
   } catch (error) {
@@ -64,7 +33,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabase = getSupabaseDb()
     const { 
       name, 
       description, 
@@ -78,55 +46,20 @@ export async function POST(request: Request) {
       teacher_id 
     } = await request.json()
 
-    const { data: activity, error } = await supabase
-      .from('activities')
-      .insert({
-        name,
-        description,
-        category,
-        unit_id,
-        max_participants,
-        age_min,
-        age_max,
-        schedule_days,
-        schedule_time,
-        teacher_id,
-        is_active: true
-      })
-      .select(`
-        id,
-        name,
-        description,
-        category,
-        unit_id,
-        max_participants,
-        age_min,
-        age_max,
-        schedule_days,
-        schedule_time,
-        teacher_id,
-        is_active,
-        created_at,
-        units (
-          id,
-          name,
-          location,
-          country
-        ),
-        profiles!activities_teacher_id_fkey (
-          id,
-          full_name,
-          email
-        )
-      `)
-      .single()
+    const sql = getDbConnection()
+    const newActivity = await sql`
+      INSERT INTO activities (
+        name, description, category, unit_id, max_participants, 
+        age_min, age_max, schedule_days, schedule_time, teacher_id, is_active
+      )
+      VALUES (
+        ${name}, ${description}, ${category}, ${unit_id}, ${max_participants}, 
+        ${age_min}, ${age_max}, ${schedule_days}, ${schedule_time}, ${teacher_id}, true
+      )
+      RETURNING *
+    `
 
-    if (error) {
-      console.error("Error creating activity:", error)
-      return NextResponse.json({ error: "Failed to create activity" }, { status: 500 })
-    }
-
-    return NextResponse.json(activity)
+    return NextResponse.json(newActivity[0])
   } catch (error) {
     console.error("Error creating activity:", error)
     return NextResponse.json({ error: "Failed to create activity" }, { status: 500 })
