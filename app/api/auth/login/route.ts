@@ -48,15 +48,25 @@ export async function POST(request: Request) {
     console.log('User authenticated successfully:', authData.user.id)
     
     // Buscar perfil do usuário
+    console.log('Searching for profile with user ID:', authData.user.id)
     let { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
       .single()
     
+    console.log('Profile search result:', { profile, profileError })
+    
     // Se o perfil não existir, criar um
     if (profileError && profileError.code === 'PGRST116') {
       console.log('Profile not found, creating one for user:', authData.user.id)
+      
+      console.log('Creating profile with data:', {
+        id: authData.user.id,
+        full_name: authData.user.user_metadata?.full_name || authData.user.email,
+        email: authData.user.email,
+        role: 'student'
+      })
       
       const { data: newProfile, error: createError } = await supabase
         .from('profiles')
@@ -68,6 +78,8 @@ export async function POST(request: Request) {
         })
         .select()
         .single()
+      
+      console.log('Profile creation result:', { newProfile, createError })
       
       if (createError) {
         console.error('Error creating profile:', createError)
