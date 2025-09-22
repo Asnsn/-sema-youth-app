@@ -47,25 +47,8 @@ export default function AdminActivities() {
   ])
 
   const handleNewActivity = () => {
-    const name = prompt("Nome da atividade:")
-    const category = prompt("Categoria (Esporte/Arte/Cultura):")
-    const instructor = prompt("Instrutor:")
-    const participants = prompt("Número de participantes:")
-    const unit = prompt("Unidade (SEMA Brasil/SEMA Angola):")
-
-    if (name && category && instructor && participants && unit) {
-      const newActivity = {
-        id: activities.length + 1,
-        name,
-        category,
-        instructor,
-        participants: Number.parseInt(participants),
-        unit,
-        status: "Ativo",
-      }
-      setActivities([...activities, newActivity])
-      alert("Atividade criada com sucesso!")
-    }
+    // Redireciona para a página de nova atividade
+    window.location.href = "/admin/activities/new"
   }
 
   const handleParticipationReport = () => {
@@ -77,34 +60,8 @@ export default function AdminActivities() {
   }
 
   const handleEditActivity = (activityId: number) => {
-    const activity = activities.find((a) => a.id === activityId)
-    if (activity) {
-      const newName = prompt("Novo nome:", activity.name)
-      const newCategory = prompt("Nova categoria:", activity.category)
-      const newInstructor = prompt("Novo instrutor:", activity.instructor)
-      const newParticipants = prompt("Novo número de participantes:", activity.participants.toString())
-      const newUnit = prompt("Nova unidade:", activity.unit)
-      const newStatus = prompt("Novo status:", activity.status)
-
-      if (newName && newCategory && newInstructor && newParticipants && newUnit && newStatus) {
-        setActivities(
-          activities.map((a) =>
-            a.id === activityId
-              ? {
-                  ...a,
-                  name: newName,
-                  category: newCategory,
-                  instructor: newInstructor,
-                  participants: Number.parseInt(newParticipants),
-                  unit: newUnit,
-                  status: newStatus,
-                }
-              : a,
-          ),
-        )
-        alert("Atividade atualizada com sucesso!")
-      }
-    }
+    // Redireciona para a página de edição
+    window.location.href = `/admin/activities/edit/${activityId}`
   }
 
   const handleViewDetails = (activityId: number) => {

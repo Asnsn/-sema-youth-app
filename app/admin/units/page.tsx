@@ -31,28 +31,8 @@ export default function AdminUnits() {
   ])
 
   const handleNewUnit = () => {
-    const name = prompt("Nome da unidade:")
-    const location = prompt("Localização:")
-    const country = prompt("País:")
-    const students = prompt("Número de alunos:")
-    const teachers = prompt("Número de professores:")
-    const activities = prompt("Número de atividades:")
-    const attendance = prompt("Percentual de presença:")
-
-    if (name && location && country && students && teachers && activities && attendance) {
-      const newUnit = {
-        id: units.length + 1,
-        name,
-        location,
-        country,
-        students: Number.parseInt(students),
-        teachers: Number.parseInt(teachers),
-        activities: Number.parseInt(activities),
-        attendance: Number.parseInt(attendance),
-      }
-      setUnits([...units, newUnit])
-      alert("Unidade criada com sucesso!")
-    }
+    // Redireciona para a página de nova unidade
+    window.location.href = "/admin/units/new"
   }
 
   const handleViewDetails = (unitId: number) => {
@@ -65,36 +45,8 @@ export default function AdminUnits() {
   }
 
   const handleEditUnit = (unitId: number) => {
-    const unit = units.find((u) => u.id === unitId)
-    if (unit) {
-      const newName = prompt("Novo nome:", unit.name)
-      const newLocation = prompt("Nova localização:", unit.location)
-      const newCountry = prompt("Novo país:", unit.country)
-      const newStudents = prompt("Novo número de alunos:", unit.students.toString())
-      const newTeachers = prompt("Novo número de professores:", unit.teachers.toString())
-      const newActivities = prompt("Novo número de atividades:", unit.activities.toString())
-      const newAttendance = prompt("Novo percentual de presença:", unit.attendance.toString())
-
-      if (newName && newLocation && newCountry && newStudents && newTeachers && newActivities && newAttendance) {
-        setUnits(
-          units.map((u) =>
-            u.id === unitId
-              ? {
-                  ...u,
-                  name: newName,
-                  location: newLocation,
-                  country: newCountry,
-                  students: Number.parseInt(newStudents),
-                  teachers: Number.parseInt(newTeachers),
-                  activities: Number.parseInt(newActivities),
-                  attendance: Number.parseInt(newAttendance),
-                }
-              : u,
-          ),
-        )
-        alert("Unidade atualizada com sucesso!")
-      }
-    }
+    // Redireciona para a página de edição
+    window.location.href = `/admin/units/edit/${unitId}`
   }
 
   return (
