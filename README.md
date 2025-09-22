@@ -1,30 +1,97 @@
-# SEMA youth app
+# 🎓 SEMA Youth App
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Sistema de gestão completo para alunos, professores e administradores da instituição SEMA.
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/lostmidiaasn/v0-sema-youth-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/GiY9M1V57kJ)
+[![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 
-## Overview
+## 🚀 Funcionalidades
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+### 👨‍💼 **Administradores**
+- Gestão completa de usuários (alunos e professores)
+- Criação e edição de atividades
+- Gestão de unidades SEMA
+- Relatórios e estatísticas
+- Sistema de notificações
 
-## Deployment
+### 👨‍🏫 **Professores**
+- Visualização de suas atividades
+- Controle de presença dos alunos
+- Gestão de alunos inscritos
+- Relatórios de frequência
 
-Your project is live at:
+### 👨‍🎓 **Alunos**
+- Visualização de atividades disponíveis
+- Inscrição em atividades
+- Acompanhamento de presença
+- Notificações sobre eventos
 
-**[https://vercel.com/lostmidiaasn/v0-sema-youth-app](https://vercel.com/lostmidiaasn/v0-sema-youth-app)**
+## 🛠️ Tecnologias
 
-## Build your app
+- **Frontend:** Next.js 14, React, TypeScript
+- **UI:** Tailwind CSS, Radix UI, shadcn/ui
+- **Backend:** Next.js API Routes
+- **Database:** Neon (PostgreSQL)
+- **Deploy:** Vercel
+- **PWA:** Service Worker, Manifest
 
-Continue building your app on:
+## 📋 Setup para Deploy
 
-**[https://v0.app/chat/projects/GiY9M1V57kJ](https://v0.app/chat/projects/GiY9M1V57kJ)**
+### 1. **Configure o Banco de Dados**
+Execute o script SQL no Neon Database:
+```sql
+-- Use o arquivo: scripts/01_neon_only_setup.sql
+```
 
-## How It Works
+### 2. **Configure as Variáveis de Ambiente no Vercel**
+```bash
+DATABASE_URL=postgresql://username:password@hostname/database
+NEXT_PUBLIC_APP_URL=https://seu-app.vercel.app
+```
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### 3. **Deploy no Vercel**
+```bash
+vercel --prod
+```
+
+## 👥 Usuários de Teste
+
+- **Admin:** admin@sema.org.br / sema2024admin
+- **Professor:** professor@sema.org.br / sema2024prof  
+- **Aluno:** joao@email.com / sema2024aluno
+
+## 📱 Acesso
+
+**Produção:** [https://vercel.com/lostmidiaasn/v0-sema-youth-app](https://vercel.com/lostmidiaasn/v0-sema-youth-app)
+
+## 🏗️ Estrutura do Projeto
+
+```
+├── app/                    # Next.js App Router
+│   ├── admin/             # Páginas administrativas
+│   ├── teacher/           # Páginas do professor
+│   ├── student/           # Páginas do aluno
+│   ├── auth/              # Autenticação
+│   └── api/               # API Routes
+├── components/            # Componentes React
+├── lib/                   # Utilitários e configurações
+├── scripts/               # Scripts SQL
+└── public/                # Arquivos estáticos
+```
+
+## 🔧 Desenvolvimento
+
+```bash
+# Instalar dependências
+npm install
+
+# Executar em desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+```
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para a instituição SEMA.

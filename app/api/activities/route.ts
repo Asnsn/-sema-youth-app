@@ -1,25 +1,60 @@
 import { NextResponse } from "next/server"
-import { getSql } from "@/lib/db"
+import { getSupabaseDb } from "@/lib/db"
+import { getCurrentUser } from "@/lib/supabase"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    const sql = getSql()
-    if (!sql) {
-      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    const supabase = getSupabaseDb()
+    
+    const { data: activities, error } = await supabase
+      .from('activities')
+      .select(`
+        id,
+        name,
+        description,
+        category,
+        unit_id,
+        max_participants,
+        age_min,
+        age_max,
+        schedule_days,
+        schedule_time,
+        teacher_id,
+        is_active,
+        created_at,
+        updated_at,
+        units (
+          id,
+          name,
+          location,
+          country
+        ),
+        profiles!activities_teacher_id_fkey (
+          id,
+          full_name,
+          email
+        ),
+        enrollments (
+          id,
+          student_id,
+          status,
+          enrolled_at,
+          profiles!enrollments_student_id_fkey (
+            id,
+            full_name,
+            email
+          )
+        )
+      `)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error("Error fetching activities:", error)
+      return NextResponse.json({ error: "Failed to fetch activities" }, { status: 500 })
     }
 
-    const activities = await sql`
-      SELECT 
-        a.id, a.title, a.description, a.type, a.status, a.priority, a.due_date, a.created_at,
-        u.name as assigned_name,
-        un.name as unit_name
-      FROM activities a
-      LEFT JOIN users u ON a.assigned_to = u.id
-      LEFT JOIN units un ON a.unit_id = un.id
-      ORDER BY a.created_at DESC
-    `
     return NextResponse.json(activities)
   } catch (error) {
     console.error("Error fetching activities:", error)
@@ -29,20 +64,69 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const sql = getSql()
-    if (!sql) {
-      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    const supabase = getSupabaseDb()
+    const { 
+      name, 
+      description, 
+      category, 
+      unit_id, 
+      max_participants, 
+      age_min, 
+      age_max, 
+      schedule_days, 
+      schedule_time, 
+      teacher_id 
+    } = await request.json()
+
+    const { data: activity, error } = await supabase
+      .from('activities')
+      .insert({
+        name,
+        description,
+        category,
+        unit_id,
+        max_participants,
+        age_min,
+        age_max,
+        schedule_days,
+        schedule_time,
+        teacher_id,
+        is_active: true
+      })
+      .select(`
+        id,
+        name,
+        description,
+        category,
+        unit_id,
+        max_participants,
+        age_min,
+        age_max,
+        schedule_days,
+        schedule_time,
+        teacher_id,
+        is_active,
+        created_at,
+        units (
+          id,
+          name,
+          location,
+          country
+        ),
+        profiles!activities_teacher_id_fkey (
+          id,
+          full_name,
+          email
+        )
+      `)
+      .single()
+
+    if (error) {
+      console.error("Error creating activity:", error)
+      return NextResponse.json({ error: "Failed to create activity" }, { status: 500 })
     }
 
-    const { title, description, type, unit_id, assigned_to, priority, due_date } = await request.json()
-
-    const result = await sql`
-      INSERT INTO activities (title, description, type, unit_id, assigned_to, priority, due_date)
-      VALUES (${title}, ${description}, ${type}, ${unit_id}, ${assigned_to}, ${priority}, ${due_date})
-      RETURNING *
-    `
-
-    return NextResponse.json(result[0])
+    return NextResponse.json(activity)
   } catch (error) {
     console.error("Error creating activity:", error)
     return NextResponse.json({ error: "Failed to create activity" }, { status: 500 })

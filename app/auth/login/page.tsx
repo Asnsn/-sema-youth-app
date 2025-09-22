@@ -23,42 +23,31 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
 
-    console.log("[v0] Login attempt:", { email, password: password ? "***" : "empty" })
-
     try {
-      // Admin credentials
-      if (email === "admin@sema.org.br" && password === "sema2024admin") {
-        console.log("[v0] Admin login successful, redirecting to /admin")
-        router.push("/admin")
-        return
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao fazer login')
       }
 
-      // Professor credentials
-      if (email === "professor@sema.org.br" && password === "sema2024prof") {
-        console.log("[v0] Professor login successful, redirecting to /teacher")
-        router.push("/teacher")
-        return
+      // Redirect based on user role
+      if (data.user?.role === 'admin') {
+        router.push('/admin')
+      } else if (data.user?.role === 'teacher') {
+        router.push('/teacher')
+      } else {
+        router.push('/student')
       }
-
-      // Student login (any other valid email/password combination)
-      if (
-        email &&
-        password &&
-        email.includes("@") &&
-        password.length >= 6 &&
-        email !== "admin@sema.org.br" &&
-        email !== "professor@sema.org.br"
-      ) {
-        console.log("[v0] Student login successful, redirecting to /student")
-        router.push("/student")
-        return
-      }
-
-      // Invalid credentials
-      console.log("[v0] Invalid credentials")
-      throw new Error("Email ou senha incorretos")
     } catch (error: unknown) {
-      console.log("[v0] Login error:", error)
+      console.error('Login error:', error)
       setError(error instanceof Error ? error.message : "Erro ao fazer login")
     } finally {
       setIsLoading(false)

@@ -15,3 +15,13 @@ export function getSql() {
     return null
   }
 }
+
+// Helper function to handle database operations
+export async function executeQuery<T>(query: () => Promise<T>): Promise<T | null> {
+  try {
+    return await query()
+  } catch (error) {
+    console.error("Database query error:", error)
+    return null
+  }
+}

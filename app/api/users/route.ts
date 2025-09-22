@@ -1,21 +1,28 @@
 import { NextResponse } from "next/server"
-import { getSql } from "@/lib/db"
+import { getDbConnection } from "@/lib/db"
+import { getUserRole } from "@/lib/auth-simple"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    const sql = getSql()
-    if (!sql) {
-      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    // Simular autenticação - em produção, usar headers de auth
+    const userId = '550e8400-e29b-41d4-a716-446655440001' // Admin por padrão
+    const userRole = getUserRole(userId)
+
+    if (userRole !== 'admin') {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    const users = await sql`
-      SELECT id, name, email, role, status, created_at 
-      FROM users 
-      ORDER BY created_at DESC
+    const sql = getDbConnection()
+    const profiles = await sql`
+      SELECT p.*, u.name as unit_name, u.location as unit_location
+      FROM profiles p
+      LEFT JOIN units u ON p.unit_id = u.id
+      ORDER BY p.created_at DESC
     `
-    return NextResponse.json(users)
+
+    return NextResponse.json(profiles)
   } catch (error) {
     console.error("Error fetching users:", error)
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 })
@@ -24,20 +31,22 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const sql = getSql()
-    if (!sql) {
-      return NextResponse.json({ error: "Database not available" }, { status: 503 })
-    }
+    const { full_name, email, role, unit_id, phone, date_of_birth, address, emergency_contact, emergency_phone } = await request.json()
 
-    const { name, email, role } = await request.json()
-
-    const result = await sql`
-      INSERT INTO users (name, email, role)
-      VALUES (${name}, ${email}, ${role})
-      RETURNING id, name, email, role, status, created_at
+    const sql = getDbConnection()
+    const newProfile = await sql`
+      INSERT INTO profiles (
+        full_name, email, role, unit_id, phone, date_of_birth, 
+        address, emergency_contact, emergency_phone
+      )
+      VALUES (
+        ${full_name}, ${email}, ${role}, ${unit_id}, ${phone}, 
+        ${date_of_birth}, ${address}, ${emergency_contact}, ${emergency_phone}
+      )
+      RETURNING *
     `
 
-    return NextResponse.json(result[0])
+    return NextResponse.json(newProfile[0])
   } catch (error) {
     console.error("Error creating user:", error)
     return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
