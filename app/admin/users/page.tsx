@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Plus, Download, Edit, Trash2, Search } from "lucide-react"
+import { ArrowLeft, Plus, Download, Edit, Trash2, Search, Users, GraduationCap } from "lucide-react"
 import MobileBottomNav from "@/components/mobile-bottom-nav"
 import DesktopSidebar from "@/components/desktop-sidebar"
 
@@ -12,15 +12,28 @@ export default function AdminUsers() {
     { id: 2, name: "Maria Santos", email: "maria@email.com", type: "Professor", unit: "SEMA Brasil", status: "Ativo" },
     { id: 3, name: "Pedro Costa", email: "pedro@email.com", type: "Aluno", unit: "SEMA Angola", status: "Ativo" },
     { id: 4, name: "Ana Oliveira", email: "ana@email.com", type: "Professor", unit: "SEMA Angola", status: "Inativo" },
+    { id: 5, name: "Carlos Mendes", email: "carlos@email.com", type: "Aluno", unit: "SEMA Brasil", status: "Ativo" },
+    { id: 6, name: "Lucia Fernandes", email: "lucia@email.com", type: "Professor", unit: "SEMA Brasil", status: "Ativo" },
   ])
 
   const [searchTerm, setSearchTerm] = useState("")
+  const [activeTab, setActiveTab] = useState<"all" | "students" | "teachers">("all")
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    if (activeTab === "students") {
+      return matchesSearch && user.type === "Aluno"
+    } else if (activeTab === "teachers") {
+      return matchesSearch && user.type === "Professor"
+    }
+    
+    return matchesSearch
+  })
+
+  const studentsCount = users.filter(user => user.type === "Aluno").length
+  const teachersCount = users.filter(user => user.type === "Professor").length
 
   const handleExportList = () => {
     const csvContent =
@@ -57,12 +70,55 @@ export default function AdminUsers() {
               </Link>
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">Usuários</h1>
-                <p className="text-sm text-gray-500">{users.length} usuários</p>
+                <p className="text-sm text-gray-500">
+                  {activeTab === "all" && `${users.length} usuários`}
+                  {activeTab === "students" && `${studentsCount} alunos`}
+                  {activeTab === "teachers" && `${teachersCount} professores`}
+                </p>
               </div>
             </div>
             <button onClick={handleExportList} className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
               <Download size={20} />
             </button>
+          </div>
+
+          {/* Mobile Tabs */}
+          <div className="px-4 pb-2">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "all" 
+                    ? "bg-white text-blue-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <Users size={16} />
+                Todos
+              </button>
+              <button
+                onClick={() => setActiveTab("students")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "students" 
+                    ? "bg-white text-green-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <GraduationCap size={16} />
+                Alunos
+              </button>
+              <button
+                onClick={() => setActiveTab("teachers")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "teachers" 
+                    ? "bg-white text-purple-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <Users size={16} />
+                Professores
+              </button>
+            </div>
           </div>
 
           {/* Mobile Search Bar */}
@@ -86,7 +142,11 @@ export default function AdminUsers() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Gerenciar Usuários</h1>
-                <p className="text-gray-600">Administração de alunos e professores ({users.length} usuários)</p>
+                <p className="text-gray-600">
+                  {activeTab === "all" && `Administração de alunos e professores (${users.length} usuários)`}
+                  {activeTab === "students" && `Gerenciamento de alunos (${studentsCount} alunos)`}
+                  {activeTab === "teachers" && `Gerenciamento de professores (${teachersCount} professores)`}
+                </p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -104,6 +164,47 @@ export default function AdminUsers() {
                   Novo Usuário
                 </Link>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Tabs */}
+        <div className="hidden lg:block bg-white border-b border-gray-100">
+          <div className="px-6 py-3">
+            <div className="flex gap-1">
+              <button
+                onClick={() => setActiveTab("all")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === "all" 
+                    ? "bg-blue-50 text-blue-600 border border-blue-200" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <Users size={16} />
+                Todos ({users.length})
+              </button>
+              <button
+                onClick={() => setActiveTab("students")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === "students" 
+                    ? "bg-green-50 text-green-600 border border-green-200" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <GraduationCap size={16} />
+                Alunos ({studentsCount})
+              </button>
+              <button
+                onClick={() => setActiveTab("teachers")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === "teachers" 
+                    ? "bg-purple-50 text-purple-600 border border-purple-200" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <Users size={16} />
+                Professores ({teachersCount})
+              </button>
             </div>
           </div>
         </div>
