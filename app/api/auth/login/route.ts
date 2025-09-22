@@ -64,7 +64,7 @@ export async function POST(request: Request) {
           id: authData.user.id,
           full_name: authData.user.user_metadata?.full_name || authData.user.email,
           email: authData.user.email,
-          role: authData.user.user_metadata?.role || 'student'
+          role: 'student' // Sempre student para usuários criados pelo app
         })
         .select()
         .single()

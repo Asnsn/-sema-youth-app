@@ -27,7 +27,7 @@ BEGIN
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'role', 'student')
+    'student' -- Sempre student para usuários criados pelo app
   );
   RETURN NEW;
 END;
@@ -55,7 +55,7 @@ SELECT
   au.id,
   COALESCE(au.raw_user_meta_data->>'full_name', au.email),
   au.email,
-  COALESCE(au.raw_user_meta_data->>'role', 'student')
+  'student' -- Sempre student para usuários criados pelo app
 FROM auth.users au
 LEFT JOIN public.profiles p ON au.id = p.id
 WHERE p.id IS NULL;

@@ -37,15 +37,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Senha deve ter pelo menos 6 caracteres" }, { status: 400 })
     }
 
-    // Definir role padrão se não fornecido
-    const userRole = role || 'student'
-    console.log('User role:', userRole)
-
-    // Validar role
-    if (!['student', 'teacher', 'admin'].includes(userRole)) {
-      console.log('Invalid role:', userRole)
-      return NextResponse.json({ error: "Role inválido" }, { status: 400 })
-    }
+    // Usuários criados pelo app sempre são estudantes
+    const userRole = 'student'
+    console.log('User role (forced to student):', userRole)
 
     // Criar cliente Supabase
     const supabase = createServerClient()

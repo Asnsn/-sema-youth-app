@@ -122,7 +122,9 @@ git push
 
 ### **👥 Gestão de Usuários**
 - ✅ Cadastro automático de perfis
-- ✅ Roles (student, teacher, admin)
+- ✅ **Sistema de Roles:**
+  - 🔹 **Usuários do App:** Sempre `student` (cadastro público)
+  - 🔹 **Professores/Admins:** Criados apenas pelo administrador
 - ✅ Vinculação com unidades
 - ✅ Dados pessoais completos
 
