@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/ssr'
 
 export function useUsers() {
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchUsers()
@@ -22,13 +21,13 @@ export function useUsers() {
       
       setUsers(data)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const createUser = async (userData) => {
+  const createUser = async (userData: any) => {
     try {
       const response = await fetch('/api/users', {
         method: 'POST',
@@ -42,10 +41,10 @@ export function useUsers() {
         throw new Error(data.error || 'Failed to create user')
       }
       
-      setUsers(prev => [data, ...prev])
+      setUsers((prev: any[]) => [data, ...prev])
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
       throw err
     }
   }
@@ -54,9 +53,9 @@ export function useUsers() {
 }
 
 export function useActivities() {
-  const [activities, setActivities] = useState([])
+  const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchActivities()
@@ -74,13 +73,13 @@ export function useActivities() {
       
       setActivities(data)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const createActivity = async (activityData) => {
+  const createActivity = async (activityData: any) => {
     try {
       const response = await fetch('/api/activities', {
         method: 'POST',
@@ -94,10 +93,10 @@ export function useActivities() {
         throw new Error(data.error || 'Failed to create activity')
       }
       
-      setActivities(prev => [data, ...prev])
+      setActivities((prev: any[]) => [data, ...prev])
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
       throw err
     }
   }
@@ -106,9 +105,9 @@ export function useActivities() {
 }
 
 export function useEnrollments() {
-  const [enrollments, setEnrollments] = useState([])
+  const [enrollments, setEnrollments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchEnrollments()
@@ -126,13 +125,13 @@ export function useEnrollments() {
       
       setEnrollments(data)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const createEnrollment = async (enrollmentData) => {
+  const createEnrollment = async (enrollmentData: any) => {
     try {
       const response = await fetch('/api/enrollments', {
         method: 'POST',
@@ -146,10 +145,10 @@ export function useEnrollments() {
         throw new Error(data.error || 'Failed to create enrollment')
       }
       
-      setEnrollments(prev => [data, ...prev])
+      setEnrollments((prev: any[]) => [data, ...prev])
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
       throw err
     }
   }
@@ -158,11 +157,11 @@ export function useEnrollments() {
 }
 
 export function useAttendance() {
-  const [attendance, setAttendance] = useState([])
+  const [attendance, setAttendance] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const fetchAttendance = async (filters = {}) => {
+  const fetchAttendance = async (filters: any = {}) => {
     try {
       setLoading(true)
       const params = new URLSearchParams(filters)
@@ -175,13 +174,13 @@ export function useAttendance() {
       
       setAttendance(data)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const markAttendance = async (attendanceData) => {
+  const markAttendance = async (attendanceData: any) => {
     try {
       const response = await fetch('/api/attendance', {
         method: 'POST',
@@ -195,8 +194,8 @@ export function useAttendance() {
         throw new Error(data.error || 'Failed to mark attendance')
       }
       
-      setAttendance(prev => {
-        const existingIndex = prev.findIndex(item => 
+      setAttendance((prev: any) => {
+        const existingIndex = prev.findIndex((item: any) => 
           item.student_id === data.student_id && 
           item.activity_id === data.activity_id && 
           item.date === data.date
@@ -213,7 +212,7 @@ export function useAttendance() {
       
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
       throw err
     }
   }
@@ -222,15 +221,15 @@ export function useAttendance() {
 }
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState([])
+  const [notifications, setNotifications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchNotifications()
   }, [])
 
-  const fetchNotifications = async (filters = {}) => {
+  const fetchNotifications = async (filters: any = {}) => {
     try {
       setLoading(true)
       const params = new URLSearchParams(filters)
@@ -243,13 +242,13 @@ export function useNotifications() {
       
       setNotifications(data)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async (notificationId: string) => {
     try {
       const response = await fetch('/api/notifications', {
         method: 'PUT',
@@ -263,8 +262,8 @@ export function useNotifications() {
         throw new Error(data.error || 'Failed to mark notification as read')
       }
       
-      setNotifications(prev => 
-        prev.map(notification => 
+      setNotifications((prev: any) => 
+        prev.map((notification: any) => 
           notification.id === notificationId 
             ? { ...notification, is_read: true, read_at: data.read_at }
             : notification
@@ -273,7 +272,7 @@ export function useNotifications() {
       
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An error occurred')
       throw err
     }
   }
