@@ -48,13 +48,34 @@ export async function POST(request: Request) {
     console.log('User authenticated successfully:', authData.user.id)
     
     // Buscar perfil do usuário
-    const { data: profile, error: profileError } = await supabase
+    let { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
       .single()
     
-    if (profileError) {
+    // Se o perfil não existir, criar um
+    if (profileError && profileError.code === 'PGRST116') {
+      console.log('Profile not found, creating one for user:', authData.user.id)
+      
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          full_name: authData.user.user_metadata?.full_name || authData.user.email,
+          email: authData.user.email,
+          role: authData.user.user_metadata?.role || 'student'
+        })
+        .select()
+        .single()
+      
+      if (createError) {
+        console.error('Error creating profile:', createError)
+        return NextResponse.json({ error: 'Erro ao criar perfil do usuário' }, { status: 500 })
+      }
+      
+      profile = newProfile
+    } else if (profileError) {
       console.error('Error fetching profile:', profileError)
       return NextResponse.json({ error: 'Erro ao buscar perfil do usuário' }, { status: 500 })
     }
