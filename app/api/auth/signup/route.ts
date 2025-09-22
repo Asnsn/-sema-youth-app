@@ -8,9 +8,11 @@ export async function POST(request: Request) {
   try {
     const { full_name, email, password, role, unit_id, phone, date_of_birth, address, emergency_contact, emergency_phone } = await request.json()
 
+    console.log('Signup request received:', { full_name, email, role, unit_id })
+
     // Validar dados obrigatórios
-    if (!full_name || !email || !password || !role) {
-      return NextResponse.json({ error: "Dados obrigatórios não fornecidos" }, { status: 400 })
+    if (!full_name || !email || !password) {
+      return NextResponse.json({ error: "Nome, email e senha são obrigatórios" }, { status: 400 })
     }
 
     // Validar email
@@ -24,8 +26,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Senha deve ter pelo menos 6 caracteres" }, { status: 400 })
     }
 
+    // Definir role padrão se não fornecido
+    const userRole = role || 'student'
+
     // Validar role
-    if (!['student', 'teacher', 'admin'].includes(role)) {
+    if (!['student', 'teacher', 'admin'].includes(userRole)) {
       return NextResponse.json({ error: "Role inválido" }, { status: 400 })
     }
 
@@ -40,6 +45,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email já está em uso" }, { status: 409 })
     }
 
+    // Se unit_id não fornecido, usar a primeira unidade disponível
+    let finalUnitId = unit_id
+    if (!finalUnitId) {
+      const units = await sql`SELECT id FROM units LIMIT 1`
+      if (units.length > 0) {
+        finalUnitId = units[0].id
+      }
+    }
+
     // Criar novo usuário
     const newUser = await sql`
       INSERT INTO profiles (
@@ -47,8 +61,8 @@ export async function POST(request: Request) {
         address, emergency_contact, emergency_phone, password_hash
       )
       VALUES (
-        ${full_name}, ${email}, ${role}, ${unit_id}, ${phone}, 
-        ${date_of_birth}, ${address}, ${emergency_contact}, ${emergency_phone}, ${password}
+        ${full_name}, ${email}, ${userRole}, ${finalUnitId}, ${phone || null}, 
+        ${date_of_birth || null}, ${address || null}, ${emergency_contact || null}, ${emergency_phone || null}, ${password}
       )
       RETURNING id, full_name, email, role, unit_id, created_at
     `
@@ -57,6 +71,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Erro ao criar usuário" }, { status: 500 })
     }
 
+    console.log('User created successfully:', newUser[0])
+
     return NextResponse.json({ 
       message: "Usuário criado com sucesso",
       user: newUser[0]
@@ -64,6 +80,9 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Signup error:', error)
-    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
+    return NextResponse.json({ 
+      error: "Erro interno do servidor", 
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }

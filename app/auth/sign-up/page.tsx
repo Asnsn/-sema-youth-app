@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -17,15 +17,45 @@ export default function SignUpPage() {
   })
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [units, setUnits] = useState<any[]>([])
+  const [unitsLoading, setUnitsLoading] = useState(true)
   const router = useRouter()
 
-  const units = [
-    { id: "1", name: "SEMA São Paulo", location: "São Paulo", country: "Brasil" },
-    { id: "2", name: "SEMA Rio de Janeiro", location: "Rio de Janeiro", country: "Brasil" },
-    { id: "3", name: "SEMA Belo Horizonte", location: "Belo Horizonte", country: "Brasil" },
-    { id: "4", name: "SEMA Salvador", location: "Salvador", country: "Brasil" },
-    { id: "5", name: "SEMA Kampala", location: "Kampala", country: "Uganda" },
-  ]
+  // Buscar unidades do banco de dados
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const response = await fetch('/api/units')
+        if (response.ok) {
+          const data = await response.json()
+          setUnits(data)
+        } else {
+          // Fallback para unidades hardcoded se a API falhar
+          setUnits([
+            { id: "1", name: "SEMA São Paulo", location: "São Paulo", country: "Brasil" },
+            { id: "2", name: "SEMA Rio de Janeiro", location: "Rio de Janeiro", country: "Brasil" },
+            { id: "3", name: "SEMA Belo Horizonte", location: "Belo Horizonte", country: "Brasil" },
+            { id: "4", name: "SEMA Salvador", location: "Salvador", country: "Brasil" },
+            { id: "5", name: "SEMA Kampala", location: "Kampala", country: "Uganda" },
+          ])
+        }
+      } catch (error) {
+        console.error('Error fetching units:', error)
+        // Fallback para unidades hardcoded
+        setUnits([
+          { id: "1", name: "SEMA São Paulo", location: "São Paulo", country: "Brasil" },
+          { id: "2", name: "SEMA Rio de Janeiro", location: "Rio de Janeiro", country: "Brasil" },
+          { id: "3", name: "SEMA Belo Horizonte", location: "Belo Horizonte", country: "Brasil" },
+          { id: "4", name: "SEMA Salvador", location: "Salvador", country: "Brasil" },
+          { id: "5", name: "SEMA Kampala", location: "Kampala", country: "Uganda" },
+        ])
+      } finally {
+        setUnitsLoading(false)
+      }
+    }
+
+    fetchUnits()
+  }, [])
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -271,6 +301,7 @@ export default function SignUpPage() {
                 required
                 value={formData.unitId}
                 onChange={(e) => handleInputChange("unitId", e.target.value)}
+                disabled={unitsLoading}
                 style={{
                   width: "100%",
                   padding: "12px",
@@ -278,10 +309,12 @@ export default function SignUpPage() {
                   borderRadius: "8px",
                   fontSize: "16px",
                   color: "#1a1a1a",
-                  backgroundColor: "white",
+                  backgroundColor: unitsLoading ? "#f5f5f5" : "white",
                 }}
               >
-                <option value="">Selecione a unidade</option>
+                <option value="">
+                  {unitsLoading ? "Carregando unidades..." : "Selecione a unidade"}
+                </option>
                 {units.map((unit) => (
                   <option key={unit.id} value={unit.id}>
                     {unit.name} - {unit.location}, {unit.country}
