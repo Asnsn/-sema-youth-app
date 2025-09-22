@@ -112,6 +112,14 @@ export async function POST(request: Request) {
         password_hash: password
       })
 
+      // Verificar se finalUnitId é válido
+      if (!finalUnitId) {
+        console.error('No valid unit_id found')
+        return NextResponse.json({ 
+          error: "Nenhuma unidade válida encontrada. Entre em contato com o administrador." 
+        }, { status: 400 })
+      }
+
       newUser = await sql`
         INSERT INTO profiles (
           full_name, email, role, unit_id, phone, date_of_birth, 
@@ -126,10 +134,41 @@ export async function POST(request: Request) {
 
       console.log('User creation query executed, result:', newUser.length)
     } catch (insertError) {
-      console.error('Error creating user:', insertError)
+      console.error('=== DATABASE INSERT ERROR ===')
+      console.error('Error type:', typeof insertError)
+      console.error('Error message:', insertError instanceof Error ? insertError.message : 'Unknown error')
+      console.error('Error code:', (insertError as any)?.code)
+      console.error('Error detail:', (insertError as any)?.detail)
+      console.error('Error constraint:', (insertError as any)?.constraint)
+      console.error('Error table:', (insertError as any)?.table)
+      console.error('Error column:', (insertError as any)?.column)
+      
+      // Verificar se é erro de constraint
+      if ((insertError as any)?.code === '23505') {
+        return NextResponse.json({ 
+          error: "Email já está em uso. Tente outro email." 
+        }, { status: 409 })
+      }
+      
+      // Verificar se é erro de foreign key
+      if ((insertError as any)?.code === '23503') {
+        return NextResponse.json({ 
+          error: "Unidade selecionada não é válida. Entre em contato com o administrador." 
+        }, { status: 400 })
+      }
+      
+      // Verificar se é erro de constraint de role
+      if ((insertError as any)?.constraint?.includes('role')) {
+        return NextResponse.json({ 
+          error: "Tipo de usuário inválido." 
+        }, { status: 400 })
+      }
+      
       return NextResponse.json({ 
         error: "Erro ao criar usuário no banco de dados", 
-        details: insertError instanceof Error ? insertError.message : 'Unknown database error'
+        details: insertError instanceof Error ? insertError.message : 'Unknown database error',
+        errorCode: (insertError as any)?.code,
+        errorConstraint: (insertError as any)?.constraint
       }, { status: 500 })
     }
 
