@@ -45,11 +45,12 @@ const Button = React.forwardRef<
   const Comp = asChild ? Slot : 'button'
 
   if (asChild) {
+    const { ref, ...slotProps } = props as any
     return (
       <Slot
         data-slot="button"
         className={cn(buttonVariants({ variant, size, className }))}
-        {...props}
+        {...slotProps}
       />
     )
   }
