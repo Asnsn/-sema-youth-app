@@ -59,12 +59,12 @@ export default async function UnitDetailPage({ params }: PageProps) {
   // Attendance statistics
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
   const recentAttendance = activeActivities.reduce(
-    (sum, activity) => sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo).length || 0),
+    (sum, activity) => sum + ((activity as any).attendance?.filter((a: any) => a.date >= thirtyDaysAgo).length || 0),
     0,
   )
   const presentAttendance = activeActivities.reduce(
     (sum, activity) =>
-      sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
+      sum + ((activity as any).attendance?.filter((a: any) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
     0,
   )
   const attendanceRate = recentAttendance > 0 ? Math.round((presentAttendance / recentAttendance) * 100) : 0
