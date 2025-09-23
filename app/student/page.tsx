@@ -59,106 +59,48 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Mock data for student dashboard
-      const mockProfile: Profile = {
-        id: "student-1",
-        full_name: "João Silva",
-        role: "student",
-        unit_id: "unit-1",
-        units: {
-          name: "SEMA Brasil",
-          location: "São Paulo",
-          country: "Brasil",
-        },
+      try {
+        // Buscar dados do usuário do localStorage
+        const userDataStr = localStorage.getItem('userData')
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr)
+          console.log('User data from localStorage:', userData)
+          
+          setProfile({
+            id: userData.id,
+            full_name: userData.full_name,
+            role: userData.role,
+            unit_id: userData.unit_id,
+            units: {
+              name: "SEMA Brasil", // TODO: Buscar dados reais da unidade
+              location: "São Paulo",
+              country: "Brasil",
+            },
+          })
+        }
+
+        // Buscar dados reais das atividades
+        try {
+          const activitiesResponse = await fetch('/api/activities')
+          if (activitiesResponse.ok) {
+            const activities = await activitiesResponse.json()
+            setAvailableActivities(activities)
+          }
+        } catch (error) {
+          console.error('Error fetching activities:', error)
+        }
+
+        // Por enquanto, usar dados vazios para inscrições e eventos
+        // TODO: Implementar APIs para buscar inscrições e eventos reais
+        setEnrollments([])
+        setUpcomingEvents([])
+        setRecentAttendance([])
+        
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        setLoading(false)
       }
-
-      const mockEnrollments: Enrollment[] = [
-        {
-          id: "enrollment-1",
-          activities: {
-            id: "activity-1",
-            name: "Yoga Matinal",
-            description: "Aulas de yoga para relaxamento e bem-estar",
-            category: "wellness",
-            schedule_days: ["Segunda", "Quarta", "Sexta"],
-            schedule_time: "07:00 - 08:00",
-            max_participants: 20,
-          },
-        },
-        {
-          id: "enrollment-2",
-          activities: {
-            id: "activity-2",
-            name: "Futebol",
-            description: "Treinos e jogos de futebol",
-            category: "sports",
-            schedule_days: ["Terça", "Quinta"],
-            schedule_time: "18:00 - 19:30",
-            max_participants: 22,
-          },
-        },
-      ]
-
-      const mockAvailableActivities: Activity[] = [
-        {
-          id: "activity-3",
-          name: "Natação",
-          description: "Aulas de natação para todos os níveis",
-          category: "sports",
-          schedule_days: ["Segunda", "Quarta"],
-          schedule_time: "19:00 - 20:00",
-          max_participants: 15,
-        },
-        {
-          id: "activity-4",
-          name: "Dança",
-          description: "Aulas de dança contemporânea",
-          category: "arts",
-          schedule_days: ["Sábado"],
-          schedule_time: "14:00 - 16:00",
-          max_participants: 25,
-        },
-      ]
-
-      const mockEvents: Event[] = [
-        {
-          id: "event-1",
-          title: "Torneio de Futebol",
-          event_date: "2024-01-20",
-          location: "Campo Principal",
-        },
-        {
-          id: "event-2",
-          title: "Festival de Dança",
-          event_date: "2024-01-25",
-          location: "Auditório",
-        },
-      ]
-
-      const mockAttendance: AttendanceRecord[] = [
-        {
-          id: "att-1",
-          status: "present",
-          activities: { name: "Yoga Matinal" },
-        },
-        {
-          id: "att-2",
-          status: "present",
-          activities: { name: "Futebol" },
-        },
-        {
-          id: "att-3",
-          status: "absent",
-          activities: { name: "Yoga Matinal" },
-        },
-      ]
-
-      setProfile(mockProfile)
-      setEnrollments(mockEnrollments)
-      setAvailableActivities(mockAvailableActivities)
-      setUpcomingEvents(mockEvents)
-      setRecentAttendance(mockAttendance)
-      setLoading(false)
     }
 
     fetchData()

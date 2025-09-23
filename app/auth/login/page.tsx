@@ -38,6 +38,10 @@ export default function LoginPage() {
         throw new Error(data.error || 'Erro ao fazer login')
       }
 
+      // Salvar dados do usuário no localStorage
+      localStorage.setItem('userEmail', email)
+      localStorage.setItem('userData', JSON.stringify(data.user))
+
       // Redirect based on user role
       if (data.user?.role === 'admin') {
         router.push('/admin')
