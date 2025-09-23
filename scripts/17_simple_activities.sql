@@ -1,5 +1,5 @@
--- scripts/16_create_sample_activities.sql
--- Este script cria atividades de exemplo para testar o sistema
+-- scripts/17_simple_activities.sql
+-- Script simplificado para criar atividades sem dependências
 
 -- 1. Verificar se existem unidades
 SELECT 
@@ -10,17 +10,7 @@ SELECT
 FROM public.units
 ORDER BY created_at DESC;
 
--- 2. Verificar se existem professores
-SELECT 
-  id,
-  full_name,
-  email,
-  role
-FROM public.profiles
-WHERE role = 'teacher'
-ORDER BY created_at DESC;
-
--- 3. Criar atividades de exemplo
+-- 2. Criar atividades simples sem professor
 INSERT INTO public.activities (
   name,
   description,
@@ -31,7 +21,6 @@ INSERT INTO public.activities (
   age_max,
   schedule_days,
   schedule_time,
-  teacher_id,
   is_active
 ) VALUES 
 -- Atividade 1: Futebol
@@ -39,13 +28,12 @@ INSERT INTO public.activities (
   'Futebol',
   'Treinos e jogos de futebol para jovens',
   'sports',
-  (SELECT id FROM public.units LIMIT 1), -- Usar primeira unidade disponível
+  (SELECT id FROM public.units LIMIT 1),
   20,
   12,
   18,
   ARRAY['Terça', 'Quinta'],
-  '18:00-19:30', -- Formato correto sem espaços
-  (SELECT id FROM public.profiles WHERE role = 'teacher' LIMIT 1), -- Usar primeiro professor
+  '18:00-19:30',
   true
 ),
 -- Atividade 2: Yoga
@@ -58,8 +46,7 @@ INSERT INTO public.activities (
   14,
   25,
   ARRAY['Segunda', 'Quarta', 'Sexta'],
-  '07:00-08:00', -- Formato correto sem espaços
-  (SELECT id FROM public.profiles WHERE role = 'teacher' LIMIT 1),
+  '07:00-08:00',
   true
 ),
 -- Atividade 3: Dança
@@ -72,8 +59,7 @@ INSERT INTO public.activities (
   13,
   20,
   ARRAY['Sábado'],
-  '14:00-16:00', -- Formato correto sem espaços
-  (SELECT id FROM public.profiles WHERE role = 'teacher' LIMIT 1),
+  '14:00-16:00',
   true
 ),
 -- Atividade 4: Natação
@@ -86,8 +72,7 @@ INSERT INTO public.activities (
   10,
   18,
   ARRAY['Segunda', 'Quarta'],
-  '19:00-20:00', -- Formato correto sem espaços
-  (SELECT id FROM public.profiles WHERE role = 'teacher' LIMIT 1),
+  '19:00-20:00',
   true
 ),
 -- Atividade 5: Teatro
@@ -100,12 +85,11 @@ INSERT INTO public.activities (
   12,
   18,
   ARRAY['Terça', 'Quinta'],
-  '16:00-18:00', -- Formato correto sem espaços
-  (SELECT id FROM public.profiles WHERE role = 'teacher' LIMIT 1),
+  '16:00-18:00',
   true
 );
 
--- 4. Verificar atividades criadas
+-- 3. Verificar atividades criadas
 SELECT 
   id,
   name,
@@ -119,7 +103,7 @@ SELECT
 FROM public.activities
 ORDER BY created_at DESC;
 
--- 5. Contar atividades por categoria
+-- 4. Contar atividades por categoria
 SELECT 
   category,
   COUNT(*) as total_activities
@@ -128,5 +112,5 @@ WHERE is_active = true
 GROUP BY category
 ORDER BY total_activities DESC;
 
--- 6. Mensagem de confirmação
+-- 5. Mensagem de confirmação
 SELECT 'Atividades de exemplo criadas com sucesso!' as status;
