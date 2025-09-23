@@ -11,21 +11,8 @@ export async function POST(request: Request) {
     console.log('=== ENROLLMENT API CALLED ===')
     console.log('Activity ID:', activity_id)
     
-    // Criar cliente Supabase com service role para contornar RLS
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error('Missing Supabase environment variables')
-      return NextResponse.json({ error: 'Configuração do servidor inválida' }, { status: 500 })
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
+    // Criar cliente Supabase simples
+    const supabase = createServerClient()
     
     // Por enquanto, vamos usar um ID fixo para teste
     // TODO: Implementar autenticação real com Supabase Auth
@@ -114,21 +101,8 @@ export async function GET(request: Request) {
   try {
     console.log('=== GET ENROLLMENTS API CALLED ===')
     
-    // Criar cliente Supabase com service role
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error('Missing Supabase environment variables')
-      return NextResponse.json({ error: 'Configuração do servidor inválida' }, { status: 500 })
-    }
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
+    // Criar cliente Supabase simples
+    const supabase = createServerClient()
     
     // Por enquanto, vamos usar um ID fixo para teste
     const userId = '550e8400-e29b-41d4-a716-446655440003' // ID do usuário de teste
