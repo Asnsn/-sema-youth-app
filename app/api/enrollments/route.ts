@@ -27,22 +27,17 @@ export async function POST(request: Request) {
       }
     })
     
-    // Buscar o usuário atual (assumindo que está logado)
     // Por enquanto, vamos usar um ID fixo para teste
-    // TODO: Implementar autenticação real
-    const { data: { user } } = await supabase.auth.getUser()
+    // TODO: Implementar autenticação real com Supabase Auth
+    const userId = '550e8400-e29b-41d4-a716-446655440003' // ID do usuário de teste
     
-    if (!user) {
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 })
-    }
-    
-    console.log('User ID:', user.id)
+    console.log('Using test user ID:', userId)
     
     // Verificar se já está inscrito
     const { data: existingEnrollment, error: checkError } = await supabase
       .from('enrollments')
       .select('id')
-      .eq('student_id', user.id)
+      .eq('student_id', userId)
       .eq('activity_id', activity_id)
       .single()
     
@@ -90,7 +85,7 @@ export async function POST(request: Request) {
     const { data: newEnrollment, error: createError } = await supabase
       .from('enrollments')
       .insert({
-        student_id: user.id,
+        student_id: userId,
         activity_id: activity_id,
         status: 'active'
       })
@@ -135,14 +130,10 @@ export async function GET(request: Request) {
       }
     })
     
-    // Buscar o usuário atual
-    const { data: { user } } = await supabase.auth.getUser()
+    // Por enquanto, vamos usar um ID fixo para teste
+    const userId = '550e8400-e29b-41d4-a716-446655440003' // ID do usuário de teste
     
-    if (!user) {
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 })
-    }
-    
-    console.log('User ID:', user.id)
+    console.log('Using test user ID:', userId)
     
     // Buscar inscrições do usuário
     const { data: enrollments, error: enrollmentsError } = await supabase
@@ -160,7 +151,7 @@ export async function GET(request: Request) {
           profiles:teacher_id(full_name)
         )
       `)
-      .eq('student_id', user.id)
+      .eq('student_id', userId)
       .eq('status', 'active')
       .order('enrolled_at', { ascending: false })
     

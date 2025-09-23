@@ -158,7 +158,7 @@ export default function EnrollPage({ params }: PageProps) {
   const isFullyBooked = currentEnrollments >= activity.max_participants
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
@@ -169,7 +169,7 @@ export default function EnrollPage({ params }: PageProps) {
                 Voltar
               </Link>
             </Button>
-            <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Inscrição em Atividade</h1>
+            <h1 className="text-2xl font-bold text-blue-900">Inscrição em Atividade</h1>
           </div>
 
           {/* Activity Details */}
