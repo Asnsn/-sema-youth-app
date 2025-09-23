@@ -31,7 +31,21 @@ interface Activity {
 
 interface Enrollment {
   id: string
-  activities?: Activity
+  student_id: string
+  activity_id: string
+  status: string
+  enrolled_at: string
+  activity: {
+    id: string
+    name: string
+    description: string
+    category: string
+    schedule_days: string[]
+    schedule_time: string
+    unit_name: string
+    unit_location: string
+    teacher_name: string
+  }
 }
 
 interface Event {
@@ -90,9 +104,19 @@ export default function StudentDashboard() {
           console.error('Error fetching activities:', error)
         }
 
-        // Por enquanto, usar dados vazios para inscrições e eventos
-        // TODO: Implementar APIs para buscar inscrições e eventos reais
-        setEnrollments([])
+        // Buscar inscrições do usuário
+        try {
+          const enrollmentsResponse = await fetch('/api/enrollments')
+          if (enrollmentsResponse.ok) {
+            const enrollments = await enrollmentsResponse.json()
+            setEnrollments(enrollments)
+          }
+        } catch (error) {
+          console.error('Error fetching enrollments:', error)
+        }
+
+        // Por enquanto, usar dados vazios para eventos e presença
+        // TODO: Implementar APIs para buscar eventos e presença reais
         setUpcomingEvents([])
         setRecentAttendance([])
         
@@ -162,24 +186,28 @@ export default function StudentDashboard() {
                         className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-green-50"
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-lg">{enrollment.activities?.name}</h3>
+                          <h3 className="font-semibold text-lg">{enrollment.activity.name}</h3>
                           <Badge
-                            variant={enrollment.activities?.category === "sports" ? "default" : "secondary"}
+                            variant={enrollment.activity.category === "sports" ? "default" : "secondary"}
                             className="capitalize"
                           >
-                            {enrollment.activities?.category}
+                            {enrollment.activity.category}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{enrollment.activities?.description}</p>
+                        <p className="text-sm text-gray-600 mb-2">{enrollment.activity.description}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
-                            {enrollment.activities?.schedule_days?.join(", ")}
+                            {enrollment.activity.schedule_days?.join(", ")}
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
-                            {enrollment.activities?.schedule_time}
+                            {enrollment.activity.schedule_time}
                           </div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                          <strong>Professor:</strong> {enrollment.activity.teacher_name} | 
+                          <strong> Local:</strong> {enrollment.activity.unit_name} - {enrollment.activity.unit_location}
                         </div>
                       </div>
                     ))}
