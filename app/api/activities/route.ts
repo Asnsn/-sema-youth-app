@@ -1,33 +1,58 @@
 import { NextResponse } from "next/server"
-import { getDbConnection } from "@/lib/db"
-import { getUserRole } from "@/lib/auth-simple"
+import { createServerClient } from "@/lib/supabase"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    // Simular autenticação - em produção, usar headers de auth
-    const userId = '550e8400-e29b-41d4-a716-446655440001' // Admin por padrão
-    const userRole = await getUserRole(userId)
-
-    const sql = getDbConnection()
-    const activities = await sql`
-      SELECT 
-        a.*,
-        u.name as unit_name,
-        u.location as unit_location,
-        p.full_name as teacher_name,
-        p.email as teacher_email
-      FROM activities a
-      LEFT JOIN units u ON a.unit_id = u.id
-      LEFT JOIN profiles p ON a.teacher_id = p.id
-      ORDER BY a.created_at DESC
-    `
-
-    return NextResponse.json(activities)
+    console.log('=== ACTIVITIES API CALLED ===')
+    
+    // Criar cliente Supabase
+    const supabase = createServerClient()
+    
+    // Buscar atividades do Supabase
+    const { data: activities, error: activitiesError } = await supabase
+      .from('activities')
+      .select(`
+        *,
+        units:unit_id(name, location),
+        profiles:teacher_id(full_name, email)
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+    
+    if (activitiesError) {
+      console.error('Error fetching activities:', activitiesError)
+      return NextResponse.json({ error: "Erro ao buscar atividades" }, { status: 500 })
+    }
+    
+    console.log('Activities found:', activities?.length || 0)
+    
+    // Transformar dados para o formato esperado
+    const formattedActivities = activities?.map(activity => ({
+      id: activity.id,
+      name: activity.name,
+      description: activity.description,
+      category: activity.category,
+      unit_id: activity.unit_id,
+      max_participants: activity.max_participants,
+      age_min: activity.age_min,
+      age_max: activity.age_max,
+      schedule_days: activity.schedule_days,
+      schedule_time: activity.schedule_time,
+      teacher_id: activity.teacher_id,
+      is_active: activity.is_active,
+      unit_name: activity.units?.name,
+      unit_location: activity.units?.location,
+      teacher_name: activity.profiles?.full_name,
+      teacher_email: activity.profiles?.email,
+      created_at: activity.created_at
+    })) || []
+    
+    return NextResponse.json(formattedActivities)
   } catch (error) {
     console.error("Error fetching activities:", error)
-    return NextResponse.json({ error: "Failed to fetch activities" }, { status: 500 })
+    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
   }
 }
 
@@ -46,22 +71,40 @@ export async function POST(request: Request) {
       teacher_id 
     } = await request.json()
 
-    const sql = getDbConnection()
-    const newActivity = await sql`
-      INSERT INTO activities (
-        name, description, category, unit_id, max_participants, 
-        age_min, age_max, schedule_days, schedule_time, teacher_id, is_active
-      )
-      VALUES (
-        ${name}, ${description}, ${category}, ${unit_id}, ${max_participants}, 
-        ${age_min}, ${age_max}, ${schedule_days}, ${schedule_time}, ${teacher_id}, true
-      )
-      RETURNING *
-    `
+    console.log('=== CREATE ACTIVITY API CALLED ===')
+    console.log('Activity data:', { name, description, category, unit_id })
 
-    return NextResponse.json(newActivity[0])
+    // Criar cliente Supabase
+    const supabase = createServerClient()
+    
+    // Criar atividade no Supabase
+    const { data: newActivity, error: createError } = await supabase
+      .from('activities')
+      .insert({
+        name,
+        description,
+        category,
+        unit_id,
+        max_participants,
+        age_min,
+        age_max,
+        schedule_days,
+        schedule_time,
+        teacher_id,
+        is_active: true
+      })
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('Error creating activity:', createError)
+      return NextResponse.json({ error: "Erro ao criar atividade" }, { status: 500 })
+    }
+
+    console.log('Activity created:', newActivity)
+    return NextResponse.json(newActivity)
   } catch (error) {
     console.error("Error creating activity:", error)
-    return NextResponse.json({ error: "Failed to create activity" }, { status: 500 })
+    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
   }
 }
