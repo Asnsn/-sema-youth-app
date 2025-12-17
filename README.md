@@ -2,8 +2,6 @@
 
 Sistema de gestão completo para alunos, professores e administradores da instituição SEMA.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/lostmidiaasn/v0-sema-youth-app)
-[![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 
 ## 🚀 Funcionalidades
 
