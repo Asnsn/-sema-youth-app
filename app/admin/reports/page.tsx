@@ -1,14 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { BarChart3, Users, Calendar, ArrowLeft, Download } from "lucide-react"
 import MobileBottomNav from "@/components/mobile-bottom-nav"
 import DesktopSidebar from "@/components/desktop-sidebar"
 
 export default function AdminReports() {
-  const [reportType, setReportType] = useState("")
-
   const generateReport = (type: string) => {
     alert(`Gerando relatório de ${type}...`)
   }
@@ -40,7 +37,7 @@ export default function AdminReports() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Relatórios Administrativos</h1>
-                <p className="text-gray-600">Análises detalhadas do sistema SEMA</p>
+                <p className="text-gray-600">Análises detalhadas do sistema Pilar</p>
               </div>
               <Link
                 href="/admin"

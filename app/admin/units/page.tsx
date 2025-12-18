@@ -10,7 +10,7 @@ export default function AdminUnits() {
   const [units, setUnits] = useState([
     {
       id: 1,
-      name: "SEMA Brasil",
+      name: "Pilar Brasil",
       location: "São Paulo",
       country: "Brasil",
       students: 89,
@@ -20,7 +20,7 @@ export default function AdminUnits() {
     },
     {
       id: 2,
-      name: "SEMA Angola",
+      name: "Pilar Angola",
       location: "Luanda",
       country: "Angola",
       students: 67,
@@ -64,7 +64,7 @@ export default function AdminUnits() {
               </Link>
               <div>
                 <h1 className="text-lg font-bold text-gray-900">Unidades</h1>
-                <p className="text-sm text-gray-500">SEMA Brasil e Angola</p>
+                <p className="text-sm text-gray-500">Pilar Brasil e Angola</p>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function AdminUnits() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Gerenciar Unidades</h1>
-                <p className="text-gray-600">Administre todas as unidades SEMA</p>
+                <p className="text-gray-600">Administre todas as unidades Pilar</p>
               </div>
               <Link
                 href="/admin"

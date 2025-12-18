@@ -1,20 +1,19 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { Calendar, Users, ArrowLeft, Plus, FileText, Edit, Eye } from "lucide-react"
 import MobileBottomNav from "@/components/mobile-bottom-nav"
 import DesktopSidebar from "@/components/desktop-sidebar"
 
 export default function AdminActivities() {
-  const [activities, setActivities] = useState([
+  const activities = [
     {
       id: 1,
       name: "Futebol Masculino",
       category: "Esporte",
       instructor: "Carlos Silva",
       participants: 25,
-      unit: "SEMA Brasil",
+      unit: "Pilar Brasil",
       status: "Ativo",
     },
     {
@@ -23,7 +22,7 @@ export default function AdminActivities() {
       category: "Arte",
       instructor: "Maria Santos",
       participants: 18,
-      unit: "SEMA Brasil",
+      unit: "Pilar Brasil",
       status: "Ativo",
     },
     {
@@ -32,7 +31,7 @@ export default function AdminActivities() {
       category: "Cultura",
       instructor: "João Oliveira",
       participants: 22,
-      unit: "SEMA Angola",
+      unit: "Pilar Angola",
       status: "Ativo",
     },
     {
@@ -41,10 +40,10 @@ export default function AdminActivities() {
       category: "Arte",
       instructor: "Ana Costa",
       participants: 15,
-      unit: "SEMA Angola",
+      unit: "Pilar Angola",
       status: "Pausado",
     },
-  ])
+  ]
 
   const handleNewActivity = () => {
     // Redireciona para a página de nova atividade

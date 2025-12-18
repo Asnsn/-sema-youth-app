@@ -65,8 +65,8 @@ export default function LoginPage() {
           <div className="mx-auto w-16 h-16 bg-green-700 rounded-2xl flex items-center justify-center mb-4">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-green-800">SEMA</h1>
-          <p className="text-green-600">Sistema de Gestão Educacional</p>
+          <h1 className="text-3xl font-bold text-green-800">Pilar</h1>
+          <p className="text-green-600">Pilar Sistema de Gestão Educacional</p>
         </div>
 
         <Card className="border-0 shadow-xl">
@@ -128,13 +128,13 @@ export default function LoginPage() {
               <div className="flex items-center gap-2">
                 <Settings className="w-4 h-4 text-green-600" />
                 <span>
-                  <strong>Admin:</strong> admin@sema.org.br / sema2024admin
+                  <strong>Admin:</strong> admin@pilar.org.br / pilar2024admin
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-green-600" />
                 <span>
-                  <strong>Professor:</strong> professor@sema.org.br / sema2024prof
+                  <strong>Professor:</strong> professor@pilar.org.br / pilar2024prof
                 </span>
               </div>
               <div className="flex items-center gap-2">

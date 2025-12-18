@@ -1,6 +1,6 @@
-# 🎓 SEMA Youth App
+# 🎓 Pilar Youth App
 
-Sistema de gestão completo para alunos, professores e administradores da instituição SEMA.
+Sistema de gestão completo para alunos, professores e administradores da instituição Pilar.
 
 
 ## 🚀 Funcionalidades
@@ -8,7 +8,7 @@ Sistema de gestão completo para alunos, professores e administradores da instit
 ### 👨‍💼 **Administradores**
 - Gestão completa de usuários (alunos e professores)
 - Criação e edição de atividades
-- Gestão de unidades SEMA
+- Gestão de unidades Pilar
 - Relatórios e estatísticas
 - Sistema de notificações
 
@@ -54,13 +54,13 @@ vercel --prod
 
 ## 👥 Usuários de Teste
 
-- **Admin:** admin@sema.org.br / sema2024admin
-- **Professor:** professor@sema.org.br / sema2024prof  
-- **Aluno:** joao@email.com / sema2024aluno
+- **Admin:** admin@pilar.org.br / pilar2024admin
+- **Professor:** professor@pilar.org.br / pilar2024prof  
+- **Aluno:** joao@email.com / pilar2024aluno
 
 ## 📱 Acesso
 
-**Produção:** [https://vercel.com/lostmidiaasn/v0-sema-youth-app](https://vercel.com/lostmidiaasn/v0-sema-youth-app)
+**Produção:** [https://vercel.com/lostmidiaasn/v0-pilar-youth-app](https://vercel.com/lostmidiaasn/v0-pilar-youth-app)
 
 ## 🏗️ Estrutura do Projeto
 
@@ -92,4 +92,4 @@ npm run build
 
 ## 📄 Licença
 
-Este projeto foi desenvolvido para a instituição SEMA.
+Este projeto foi desenvolvido para a instituição Pilar.

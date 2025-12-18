@@ -8,25 +8,68 @@ interface PageProps {
   params: Promise<{ unitId: string }>
 }
 
+interface Student {
+  id: string
+  full_name: string
+  email: string
+  created_at: string
+}
+
+interface Teacher {
+  id: string
+  full_name: string
+  email: string
+}
+
+interface Enrollment {
+  id: string
+  status: "active" | "inactive"
+}
+
+interface Attendance {
+  date: string
+  status: "present" | "absent"
+}
+
+interface Activity {
+  id: string
+  name: string
+  description: string
+  category: string
+  max_participants: number
+  schedule_days: string[]
+  schedule_time: string
+  enrollments: Enrollment[]
+  attendance?: Attendance[]
+}
+
+interface UpcomingEvent {
+  id: string
+  title: string
+  event_date: string
+  event_time: string
+  max_participants: number
+}
+
 export default async function UnitDetailPage({ params }: PageProps) {
   const { unitId } = await params
 
   const unit = {
     id: unitId,
-    name: "SEMA Brasil",
+    name: "Pilar Brasil",
     location: "São Paulo",
     country: "Brasil",
     created_at: "2024-01-01",
   }
 
-  const students = [
+  const students: Student[] = [
     { id: "1", full_name: "João Silva", email: "joao@email.com", created_at: "2024-01-15" },
     { id: "2", full_name: "Maria Santos", email: "maria@email.com", created_at: "2024-01-20" },
   ]
 
-  const teachers = [{ id: "1", full_name: "Prof. Carlos", email: "carlos@email.com" }]
+  const teachers: Teacher[] = [{ id: "1", full_name: "Prof. Carlos", email: "carlos@email.com" }]
 
-  const activeActivities = [
+  const activeActivities: Activity[] = [
     {
       id: "1",
       name: "Yoga Matinal",
@@ -35,11 +78,18 @@ export default async function UnitDetailPage({ params }: PageProps) {
       max_participants: 20,
       schedule_days: ["Segunda", "Quarta"],
       schedule_time: "07:00",
-      enrollments: [{ id: "1" }, { id: "2" }],
+      enrollments: [
+        { id: "1", status: "active" },
+        { id: "2", status: "inactive" },
+      ],
+      attendance: [
+        { date: "2024-07-20", status: "present" },
+        { date: "2024-07-22", status: "present" },
+      ],
     },
   ]
 
-  const upcomingEvents = [
+  const upcomingEvents: UpcomingEvent[] = [
     {
       id: "1",
       title: "Workshop de Meditação",
@@ -52,19 +102,19 @@ export default async function UnitDetailPage({ params }: PageProps) {
   // Process data
   const totalEnrollments = activeActivities.reduce((sum, activity) => sum + (activity.enrollments?.length || 0), 0)
   const activeEnrollments = activeActivities.reduce(
-    (sum, activity) => sum + (activity.enrollments?.filter((e: any) => e.status === "active").length || 0),
+    (sum, activity) => sum + (activity.enrollments?.filter((e) => e.status === "active").length || 0),
     0,
   )
 
   // Attendance statistics
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
   const recentAttendance = activeActivities.reduce(
-    (sum, activity) => sum + ((activity as any).attendance?.filter((a: any) => a.date >= thirtyDaysAgo).length || 0),
+    (sum, activity) => sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo).length || 0),
     0,
   )
   const presentAttendance = activeActivities.reduce(
     (sum, activity) =>
-      sum + ((activity as any).attendance?.filter((a: any) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
+      sum + (activity.attendance?.filter((a) => a.date >= thirtyDaysAgo && a.status === "present").length || 0),
     0,
   )
   const attendanceRate = recentAttendance > 0 ? Math.round((presentAttendance / recentAttendance) * 100) : 0
